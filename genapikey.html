@@ -1,0 +1,1412 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>API Key Manager</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #000;
+            color: #0f0;
+            text-align: center;
+            padding: 20px;
+            margin: 0;
+            min-height: 100vh;
+            transition: all 0.3s ease;
+        }
+
+        body.white-theme {
+            background-color: #fff;
+            color: #000;
+        }
+
+        body.white-theme .container {
+            background: rgba(255, 255, 255, 0.9);
+            border: 1px solid #000;
+        }
+
+        body.white-theme input, 
+        body.white-theme button,
+        body.white-theme a {
+            border-color: #000;
+            color: #000;
+            background: rgba(255, 255, 255, 0.9);
+        }
+
+        body.white-theme .tutorial-section {
+            background: rgba(255, 255, 255, 0.9);
+            color: #000;
+        }
+
+        body.white-theme .theme-buttons {
+            background: rgba(255, 255, 255, 0.9);
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+        }
+
+        body.white-theme table {
+            border-color: #000;
+        }
+
+        body.white-theme th, 
+        body.white-theme td {
+            border-color: #000;
+            color: #000;
+        }
+
+        body.white-theme .avatar {
+            border-color: #000;
+            box-shadow: 0 0 15px rgba(0, 0, 0, 0.3);
+        }
+
+        body.white-theme .profile-logo a {
+            border-color: #000;
+            color: #000 !important;
+        }
+
+        body.white-theme #content {
+            color: #000;
+        }
+
+        body.white-theme .tutorial-btn {
+            background: #fff !important;
+            color: #000 !important;
+            border: 2px solid #000 !important;
+        }
+
+        body.white-theme .logout-btn {
+            background: #fff;
+            color: #000;
+            border: 2px solid #000;
+        }
+
+        body.white-theme .logout-btn:hover {
+            background: #f0f0f0;
+        }
+
+        body.white-theme #loading {
+            color: #000;
+        }
+
+        body.white-theme h2, 
+        body.white-theme h3,
+        body.white-theme h4 {
+            color: #000;
+            text-shadow: none;
+        }
+
+        body.white-theme .step-guide {
+            color: #000;
+        }
+
+        body.white-theme .step-guide li {
+            color: #000;
+        }
+
+        body.white-theme .profile-logo a i {
+            color: #000;
+        }
+
+        .theme-buttons {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            background: rgba(0, 0, 0, 0.9);
+            padding: 12px;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0, 255, 0, 0.3);
+        }
+
+        .theme-btn {
+            padding: 10px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 16px;
+            font-weight: bold;
+            min-width: 120px;
+        }
+
+        .theme-btn.black {
+            background: #000;
+            color: #fff;
+            border: 1px solid #fff;
+        }
+
+        .theme-btn.white {
+            background: #fff;
+            color: #000;
+            border: 1px solid #000;
+        }
+
+        .theme-btn.toggle {
+            background: #333;
+            color: #fff;
+            border: 1px solid #fff;
+        }
+
+        .tutorial-section {
+            background: rgba(0, 0, 0, 0.5);
+            padding: 20px;
+            border-radius: 10px;
+            margin: 20px auto;
+            max-width: 800px;
+        }
+
+        .step-guide {
+            text-align: left;
+            margin: 20px auto;
+            max-width: 500px;
+        }
+
+        .step-guide ol {
+            padding-left: 20px;
+        }
+
+        .step-guide li {
+            margin: 10px 0;
+            color: #0f0;
+        }
+
+        body.white-theme .step-guide li {
+            color: #000;
+        }
+
+        .theme-buttons.hidden .theme-btn:not(.toggle) {
+            display: none;
+        }
+
+        .zip-code-container {
+            display: flex;
+            max-width: 400px;
+            margin: 10px auto;
+            gap: 10px;
+            align-items: center;
+        }
+
+        .refresh-btn {
+            width: 40px;
+            height: 40px;
+            padding: 0;
+            border-radius: 50%;
+            font-size: 20px;
+            cursor: pointer;
+        }
+
+        .password-container {
+            position: relative;
+            width: 100%;
+            max-width: 400px;
+            margin: 10px auto;
+        }
+
+        .password-toggle {
+            position: absolute;
+            right: 10px;
+            top: 50%;
+            transform: translateY(-50%);
+            cursor: pointer;
+            color: #0f0;
+            z-index: 1;
+        }
+
+        body.white-theme .password-toggle {
+            color: #000;
+        }
+
+        input, button {
+            display: block;
+            width: 100%;
+            max-width: 400px;
+            margin: 10px auto;
+            padding: 12px;
+            font-size: 16px;
+            border-radius: 8px;
+            border: 1px solid #0f0;
+            background: rgba(34, 34, 34, 0.9);
+            color: #0f0;
+            box-sizing: border-box;
+            transition: all 0.3s ease;
+        }
+
+        body.white-theme input, 
+        body.white-theme button {
+            border-color: #000;
+            background: #fff;
+            color: #000;
+        }
+
+        input:focus, button:hover {
+            outline: none;
+            box-shadow: 0 0 10px #0f0;
+            transform: translateY(-2px);
+        }
+
+        body.white-theme input:focus, 
+        body.white-theme button:hover {
+            box-shadow: 0 0 10px #000;
+        }
+
+        button {
+            cursor: pointer;
+            padding: 12px 20px;
+            border-radius: 8px;
+            font-weight: bold;
+            font-size: 16px;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.5);
+            box-shadow: 0 4px 6px rgba(0,255,0,0.2);
+            border: 2px solid rgba(255,255,255,0.2);
+            transition: all 0.3s ease;
+        }
+
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 8px rgba(0,255,0,0.3);
+        }
+
+        .delete-btn {
+            background: #ff3333;
+            color: white;
+        }
+
+        .delete-btn:hover {
+            background: #ff0000;
+        }
+
+        .add-btn {
+            background: #00cc00;
+            color: white;
+        }
+
+        body.white-theme .add-btn {
+            background: #fff;
+            color: #000;
+            border: 2px solid #000;
+        }
+
+        .add-btn:hover {
+            background: #00ff00;
+            color: black;
+        }
+
+        body.white-theme .add-btn:hover {
+            background: #f0f0f0;
+            color: #000;
+        }
+
+        .logout-btn {
+            background: #ff9900;
+            color: black;
+            font-weight: bold;
+        }
+
+        .logout-btn:hover {
+            background: #ffaa00;
+        }
+
+        .table-container {
+            width: 100%;
+            overflow-x: auto;
+            margin-top: 20px;
+            -webkit-overflow-scrolling: touch;
+            border-radius: 8px;
+        }
+
+        @media screen and (max-width: 480px) {
+            table {
+                min-width: 100%;
+                font-size: 14px;
+            }
+            th, td {
+                padding: 8px 4px;
+                font-size: 14px !important;
+                white-space: normal;
+            }
+            .table-container {
+                margin: 0 -5px;
+                width: calc(100% + 10px);
+            }
+            .delete-btn {
+                padding: 8px 5px !important;
+                font-size: 14px !important;
+            }
+        }
+
+        table {
+            width: 100%;
+            min-width: 600px;
+            margin-top: 20px;
+            border-collapse: collapse;
+            table-layout: fixed;
+        }
+
+        th, td {
+            padding: 8px;
+            border: 1px solid #0f0;
+            text-align: center;
+            overflow: visible;
+            text-overflow: clip;
+            white-space: normal;
+            word-break: break-word;
+        }
+
+        th:nth-child(1), td:nth-child(1) {
+            width: 30%;
+        }
+
+        th:nth-child(2), td:nth-child(2) {
+            width: 15%;
+        }
+
+        th:nth-child(3), td:nth-child(3) {
+            width: 10%;
+        }
+
+        th:nth-child(4), td:nth-child(4) {
+            width: 15%;
+        }
+
+        th:nth-child(5), td:nth-child(5) {
+            width: 10%;
+        }
+
+        th:nth-child(6), td:nth-child(6) {
+            width: 20%;
+        }
+
+        .delete-btn {
+            background: #ff3333;
+            color: white;
+            padding: 6px 12px;
+            border-radius: 4px;
+            font-size: 14px;
+            border: none;
+            cursor: pointer;
+            max-width: 120px;
+            margin: 0 auto;
+            display: block;
+            transition: all 0.3s ease;
+        }
+
+        @media screen and (max-width: 768px) {
+            .delete-btn {
+                width: 90%;
+                padding: 10px 5px;
+                font-size: 12px;
+            }
+        }
+
+        .delete-btn:hover {
+            background: #ff0000;
+        }
+
+        #loading {
+            display: none;
+            color: #00ff00;
+            font-size: 1.5em;
+            margin-top: 20px;
+        }
+
+        video {
+            width: 100%;
+            max-width: 500px;
+            margin-top: 20px;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background: rgba(0, 0, 0, 0.8);
+            border-radius: 12px;
+            box-shadow: 0 0 20px rgba(0, 255, 0, 0.1);
+        }
+
+        h2, h3 {
+            margin: 20px 0;
+            text-shadow: 0 0 10px #0f0;
+        }
+
+        footer {
+            margin-top: 30px;
+            color: #0f0;
+            text-align: center;
+            padding: 15px;
+            border-top: 2px solid #0f0;
+            background: rgba(0, 0, 0, 0.9);
+            position: relative;
+            bottom: 0;
+            width: 100%;
+            box-sizing: border-box;
+            box-shadow: 0 -2px 10px rgba(0, 255, 0, 0.2);
+            transition: all 0.3s ease;
+        }
+
+        body.white-theme footer {
+            color: #000;
+            border-top: 2px solid #000;
+            background: rgba(255, 255, 255, 0.9);
+            box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        footer p {
+            margin: 0;
+            font-size: 14px;
+            font-weight: bold;
+            text-shadow: 0 0 3px rgba(0, 255, 0, 0.5);
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            transition: all 0.3s ease;
+        }
+
+        body.white-theme footer p {
+            text-shadow: none;
+        }
+
+        .profile-logo {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .avatar {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            border: 3px solid #0f0;
+            box-shadow: 0 0 15px rgba(0, 255, 0, 0.3);
+            cursor: pointer;
+        }
+
+        .avatar-container {
+            position: relative;
+            display: inline-block;
+            cursor: pointer;
+        }
+
+        .upload-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            background: rgba(0, 0, 0, 0.7);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+
+        .upload-overlay span {
+            color: white;
+            font-size: 14px;
+            text-align: center;
+        }
+
+        .avatar-container:hover .upload-overlay {
+            opacity: 1;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="theme-buttons hidden" id="themeButtons" style="position: static; margin-bottom: 20px;">
+            <button class="theme-btn black" onclick="setTheme('black')">Black Theme</button>
+            <button class="theme-btn white" onclick="setTheme('white')">White Theme</button>
+            <button class="theme-btn toggle" onclick="toggleButtons()">Show</button>
+        </div>
+        <div id="profileSection" style="display: none;">
+            <div class="profile-logo">
+                <label for="profile-upload" class="avatar-container">
+                    <img id="profile-image" src="https://api.dicebear.com/7.x/initials/svg?seed=Eugene" alt="Profile Logo" class="avatar">
+                    <div class="upload-overlay">
+                        <span>Change Photo</span>
+                    </div>
+                </label>
+                <input type="file" id="profile-upload" accept="image/*" style="display: none">
+                <h3 id="username-display" style="margin-top: 10px; color: inherit;"></h3>
+                <div style="margin-top: 20px; display: flex; justify-content: center; gap: 30px;">
+                    <a href="https://t.me/ZenoOnTop" target="_blank" style="text-decoration: none; color: #fff; font-size: 32px;">
+                        <i class="fab fa-telegram"></i>
+                    </a>
+                    <a href="https://tiktok.com/@zeno.on.top0" target="_blank" style="text-decoration: none; color: #fff; font-size: 32px;">
+                        <i class="fab fa-tiktok"></i>
+                    </a>
+                    <a href="https://www.facebook.com/share/1BgAX3ZfMx/" target="_blank" style="text-decoration: none; color: #fff; font-size: 32px;">
+                        <i class="fab fa-facebook"></i>
+                    </a>
+                </div>
+            </div>
+        </div>
+        <h2>API Key Manager</h2>
+        <div style="margin-bottom: 20px;">
+            <a href="/manage/account" style="color: #0f0; text-decoration: none; border: 1px solid #0f0; padding: 8px 16px; border-radius: 4px;" id="accountManageLink">Account Management</a>
+        </div>
+
+        <style>
+            body.white-theme #accountManageLink {
+                color: #000 !important;
+                border-color: #000 !important;
+                background: #fff !important;
+            }
+            body.white-theme #accountManageLink:hover {
+                background: #f0f0f0 !important;
+            }
+        </style>
+
+        <div id="loginContainer">
+            <h3>Login</h3>
+            <input type="text" id="username" placeholder="Enter Username">
+            <div class="password-container">
+                <input type="password" id="password" placeholder="Enter Password">
+                <i class="fas fa-eye-slash password-toggle" onclick="togglePassword('password')"></i>
+            </div>
+            <button class="add-btn" onclick="login()">Login</button>
+            <p>Don't have an account? <a href="#" onclick="toggleSignup(true)">Sign up</a></p>
+            <p><a href="#" onclick="toggleForgotPassword(true)">Forgot Password?</a></p>
+        </div>
+
+        <div id="signupContainer" style="display: none;">
+            <h3>Signup</h3>
+            <input type="text" id="newUsername" placeholder="Enter Username">
+            <div class="password-container">
+                <input type="password" id="newPassword" placeholder="Enter Password">
+                <i class="fas fa-eye-slash password-toggle" onclick="togglePassword('newPassword')"></i>
+            </div>
+            <button class="add-btn" onclick="signup()">Create Account</button>
+            <p>Already have an account? <a href="#" onclick="toggleSignup(false)">Login</a></p>
+        </div>
+
+        <div id="forgotPasswordContainer" style="display: none;">
+            <h3>Reset Password</h3>
+            <input type="text" id="forgotUsername" placeholder="Enter Username">
+            <button class="add-btn" onclick="forgotPassword()">Get Reset Link</button>
+            <p><a href="#" onclick="toggleForgotPassword(false)">Back to Login</a></p>
+        </div>
+
+        <div id="resetPasswordContainer" style="display: none;">
+            <h3>Set New Password</h3>
+            <input type="text" id="resetUsername" placeholder="Enter Username">
+            <input type="text" id="resetToken" placeholder="Enter Reset Token">
+            <div class="password-container">
+                <input type="password" id="newResetPassword" placeholder="Enter New Password">
+                <i class="fas fa-eye-slash password-toggle" onclick="togglePassword('newResetPassword')"></i>
+            </div>
+            <button class="add-btn" onclick="resetPassword()">Set New Password</button>
+            <p><a href="#" onclick="toggleResetPassword(false)">Back to Login</a></p>
+        </div>
+
+        <button class="add-btn" onclick="openApiDocs()">View API Documentation</button>
+
+        <div id="apiKeyManager" style="display: none;">
+            <button class="logout-btn" onclick="logout()">Logout</button>
+
+
+
+            <h3>Apikey List</h3>
+            <div class="table-container" style="overflow-x: auto; -webkit-overflow-scrolling: touch; max-width: 100%; margin: 0 -10px; width: calc(100% + 20px);">
+            <table style="width: 100%; border-collapse: collapse; margin: 0 auto; table-layout: fixed; min-width: 800px;">
+                <thead>
+                    <tr>
+                        <th style="width: 30%; padding: 12px 8px; font-size: 16px;">API Key</th>
+                        <th style="width: 15%; padding: 12px 8px; font-size: 16px;">Expiration</th>
+                        <th style="width: 10%; padding: 12px 8px; font-size: 16px;">ZIP</th>
+                        <th style="width: 15%; padding: 12px 8px; font-size: 16px;">Key Type</th>
+                        <th style="width: 15%; padding: 12px 8px; font-size: 16px; min-width: 180px;">Status</th>
+                        <th style="width: 15%; padding: 12px 8px; font-size: 16px;">Actions</th>
+                    </tr>
+                </thead>
+                <tbody id="keyTableBody"></tbody>
+            </table>
+            </div>
+
+            <h3>Apikey Management</h3>
+            <button class="add-btn" onclick="showMaintenanceModal()">Manage Keys</button>
+
+            <!-- Maintenance Modal -->
+            <div id="maintenanceModal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); z-index: 1000;">
+                <div style="position: relative; background: #111; color: #0f0; padding: 20px; border-radius: 8px; width: 80%; max-width: 500px; margin: 50px auto;">
+                    <h4>Apikey Management</h4>
+                    <div style="margin: 10px 0;">
+                        <button class="add-btn" style="display: inline-block; width: 48%; margin-right: 2%;" onclick="disableAllMaintenance()">Disable All</button>
+                        <button class="add-btn" style="display: inline-block; width: 48%;" onclick="toggleAllMaintenance()">Maintainance All</button>
+                    </div>
+                    <div id="keysList" style="margin: 20px 0;"></div>
+                    <button class="add-btn" onclick="closeMaintenanceModal()">Close</button>
+                </div>
+            </div>
+
+            <h3>Add New API Key</h3>
+            <input type="text" id="newApiKey" placeholder="Enter API Key">
+            <input type="date" id="newExpirationDate">
+            <select id="deviceLimit" onchange="toggleZipCodeVisibility()" style="width: 100%; max-width: 400px; margin: 10px auto; padding: 12px; font-size: 16px; border-radius: 8px; border: 1px solid #0f0; background: rgba(34, 34, 34, 0.9); color: #0f0;">
+                <option value="1 Key 1 Dev">1 Key 1 Dev</option>
+                <option value="1 Key All Dev">1 Key All Dev</option>
+            </select>
+            <div class="zip-code-container" id="zipCodeContainer">
+                <input type="text" id="zipCode" placeholder="Enter ZIP Code">
+                <button class="refresh-btn" onclick="loadUserZipCode()">↻</button>
+            </div>
+            <button class="add-btn" onclick="addApiKey()">Add Key</button>
+
+            <h3>Remove API Key</h3>
+            <input type="text" id="removeApiKey" placeholder="Enter API Key to Remove">
+            <button class="delete-btn" onclick="removeApiKeyManual()">Remove Key</button>
+        </div>
+
+        <button onclick="toggleTutorial()" class="tutorial-btn" style="background: #4CAF50; margin: 20px auto; color: white;">Show Tutorial</button>
+        <div id="tutorialSection" style="display: none;">
+            <h3>Tutorial Video</h3>
+            <div class="tutorial-section">
+            <div class="step-guide">
+                <h4>Step-by-Step Guide:</h4>
+                <ol>
+                    <li>Login or create an account</li>
+                    <li>Generate your API key</li>
+                    <li>Copy your ZIP code</li>
+                    <li>Add expiration date</li>
+                    <li>Download the script (API Documentation)</li>
+                    <li>Open GameGuardian and import the script</li>
+                    <li>Enter your credentials and enjoy!</li>
+                </ol>
+            </div>
+            <video controls style="width: 100%; max-width: 500px; margin: 20px auto;">
+                <source src="/tuts" type="video/mp4">
+                Your browser does not support the video tag
+            </video>
+        </div>
+        </div>
+
+        <button onclick="toggleShotiButton()" class="tutorial-btn" style="background: #4CAF50; margin: 20px auto;">Show Shoti</button>
+        <div id="shotiSection" style="display: none;">
+            <button onclick="fetchShotiData()">Load Shoti Video</button>
+            <div id="loading" style="display: none;">Loading video...</div>
+        <div style="width: 100%; max-width: 500px; margin: 20px auto;">
+                <video id="videoPlayer" controls autoplay playsinline>
+                    <source src="" type="video/mp4">
+                    Your browser does not support the video tag
+                </video>
+                <div style="display: flex; align-items: center; gap: 10px; margin-top: 10px;">
+                    <i class="fas fa-volume-up"></i>
+                    <input type="range" id="volumeSlider" min="0" max="100" value="100" style="flex-grow: 1;">
+                    <span id="volumeValue">100%</span>
+                </div>
+            </div>
+        <div id="content"></div>
+
+
+        <footer>
+            <p>Credits: By Zeno On Top</p>
+        </footer>
+    </div>
+
+    <script>
+        document.getElementById('profile-upload').addEventListener('change', async function(event) {
+            const file = event.target.files[0];
+            if (file) {
+                const formData = new FormData();
+                formData.append('profilePicture', file);
+
+                try {
+                    const token = localStorage.getItem("token");
+                    const response = await fetch('/upload-profile-picture', {
+                        method: 'POST',
+                        headers: {
+                            'Authorization': token
+                        },
+                        body: formData
+                    });
+
+                    const data = await response.json();
+
+                    if (response.ok) {
+                        alert('Profile picture uploaded successfully!');
+                        if (data.path) {
+                            document.getElementById('profile-image').src = data.path + '?t=' + new Date().getTime();
+                        }
+                    } else {
+                        alert(data.error || 'Failed to upload profile picture');
+                    }
+                } catch (error) {
+                    console.error('Error:', error);
+                    alert('Error uploading profile picture');
+                }
+            }
+        });
+
+        function openApiDocs() {
+            const link = document.createElement('a');
+            link.href = '/execute/lua';
+            link.download = 'execute.lua';
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        }
+
+        async function loadUserZipCode() {
+            try {
+                const response = await fetch('/execute/info');
+                if (!response.ok) {
+                    throw new Error('Failed to fetch IP data');
+                }
+                const data = await response.json();
+                if (data && Array.isArray(data) && data.length > 0) {
+                    const zipCode = data[0].zip || 'Unknown';
+                    const zipInput = document.getElementById('zipCode');
+                    if (zipInput) {
+                        zipInput.value = zipCode;
+                    }
+                    return zipCode;
+                }
+                throw new Error('Invalid data format');
+            } catch (error) {
+                console.error('Error loading ZIP code:', error);
+                const zipInput = document.getElementById('zipCode');
+                if (zipInput) {
+                    zipInput.value = 'Unknown';
+                }
+                return 'Unknown';
+            }
+        }
+
+        async function checkAuth() {
+            const token = localStorage.getItem("token");
+            const username = localStorage.getItem("username");
+
+            if (!token || !username) {
+                document.getElementById("loginContainer").style.display = "block";
+                document.getElementById("apiKeyManager").style.display = "none";
+                document.getElementById("profileSection").style.display = "none";
+                return;
+            }
+
+            // Verify if account exists in LoginUser.json
+            try {
+                const response = await fetch("/accounts");
+                const accounts = await response.json();
+                const userExists = accounts.some(account => account.username === username);
+
+                if (!userExists) {
+                    localStorage.removeItem("token");
+                    localStorage.removeItem("username");
+                    window.location.reload();
+                    return;
+                }
+            } catch (error) {
+                console.error("Error checking account:", error);
+                localStorage.removeItem("token");
+                localStorage.removeItem("username");
+                window.location.reload();
+                return;
+            }
+
+            document.getElementById("loginContainer").style.display = token ? "none" : "block";
+            document.getElementById("signupContainer").style.display = "none";
+            document.getElementById("apiKeyManager").style.display = token ? "block" : "none";
+            document.getElementById("profileSection").style.display = token ? "block" : "none";
+
+            // Clear profile data if not logged in
+            if (!token || !username) {
+                document.getElementById("username-display").textContent = "";
+                document.getElementById('profile-image').src = "";
+                return;
+            }
+
+            // Update username display
+            document.getElementById("username-display").textContent = username;
+
+            try {
+                const response = await fetch('/user-profile', {
+                    headers: {
+                        'Authorization': token
+                    }
+                });
+                const data = await response.json();
+
+                if (data.profilePicture) {
+                    // Add timestamp to prevent caching
+                    document.getElementById('profile-image').src = `${data.profilePicture}&t=${Date.now()}`;
+                } else {
+                    // Set default avatar if no profile picture
+                    document.getElementById('profile-image').src = `https://api.dicebear.com/7.x/initials/svg?seed=${username}`;
+                }
+                fetchApiKeys();
+            } catch (error) {
+                console.error('Error loading profile:', error);
+                document.getElementById('profile-image').src = `https://api.dicebear.com/7.x/initials/svg?seed=${username}`;
+            }
+        }
+
+        function toggleSignup(isSignup) {
+            document.getElementById("loginContainer").style.display = isSignup ? "none" : "block";
+            document.getElementById("signupContainer").style.display = isSignup ? "block" : "none";
+        }
+
+        async function signup() {
+            const username = document.getElementById("newUsername").value;
+            const password = document.getElementById("newPassword").value;
+
+            if (!username || !password) {
+                alert("Please enter a username and password.");
+                return;
+            }
+
+            const response = await fetch("/signup", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ username, password })
+            });
+
+            const result = await response.json();
+            if (response.ok) {
+                alert("Signup successful! Logging in...");
+                localStorage.setItem("username", username);
+                // Set default profile image using DiceBear API
+                const profileImage = document.getElementById('profile-image');
+                if (profileImage) {
+                    profileImage.src = `https://api.dicebear.com/7.x/initials/svg?seed=${username}`;
+                }
+                loginAfterSignup(username, password);
+            } else {
+                alert(result.error);
+            }
+        }
+
+        async function loginAfterSignup(username, password) {
+            const response = await fetch("/login", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ username, password })
+            });
+
+            const result = await response.json();
+            if (response.ok) {
+                localStorage.setItem("token", result.token);
+                checkAuth();
+            } else {
+                alert("Signup successful, but login failed. Please try logging in.");
+            }
+        }
+
+        async function login() {
+            const username = document.getElementById("username").value;
+            const password = document.getElementById("password").value;
+
+            if (!username || !password) {
+                alert("Please enter both username and password");
+                return;
+            }
+
+            try {
+                const response = await fetch("/login", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ username, password })
+                });
+
+                const result = await response.json();
+                if (response.ok) {
+                    localStorage.setItem("token", result.token);
+                    localStorage.setItem("username", username);
+                    await loadUserZipCode();
+                    checkAuth();
+                } else {
+                    alert(result.error || "Login failed");
+                }
+            } catch (error) {
+                console.error("Login error:", error);
+                alert("An error occurred during login");
+            }
+        }
+
+        async function fetchApiKeys() {
+            const token = localStorage.getItem("token");
+            if (!token) return;
+
+            try {
+                const response = await fetch("/key", {
+                    method: "GET",
+                    headers: { "Authorization": token }
+                });
+
+                const data = await response.json();
+                const tableBody = document.getElementById("keyTableBody");
+                tableBody.innerHTML = "";
+
+                if (Object.keys(data).length === 0) {
+                    tableBody.innerHTML = `<tr><td colspan="6" style="text-align: center;">No API keys found</td></tr>`;
+                    return;
+                }
+
+                for (let [apiKey, keyData] of Object.entries(data)) {
+                    const maintenanceStatus = keyData.maintenance ? 'Maintenance' : 'Active';
+                    const statusColor = keyData.maintenance ? '#ff9900' : '#00cc00';
+                    const row = document.createElement('tr');
+
+                    row.innerHTML = `
+                        <td style="font-size: 16px; word-break: break-all; padding: 12px 8px; width: 30%;">${apiKey}</td>
+                        <td style="font-size: 16px; padding: 12px 8px; width: 15%;">${keyData.expirationDate || 'N/A'}</td>
+                        <td style="font-size: 16px; padding: 12px 8px; width: 10%;">${keyData.zipCode || 'N/A'}</td>
+                        <td style="font-size: 16px; padding: 12px 8px; width: 15%;">${keyData.type || 'N/A'}</td>
+                        <td style="color: ${statusColor}; font-weight: bold; font-size: 18px; padding: 12px 8px; width: 15%; min-width: 180px; white-space: nowrap;">${maintenanceStatus}</td>
+                        <td style="padding: 12px 8px; width: 15%;">
+                            <button class="delete-btn" onclick="removeApiKey('${apiKey}')" style="display: block; width: 100%; margin: 0 auto; padding: 8px 0; font-size: 15px; background-color: #ff3333; color: white; border-radius: 4px; border: none;">Delete</button>
+                        </td>
+                    `;
+
+                    tableBody.appendChild(row);
+                }
+            } catch (error) {
+                console.error("Error fetching API keys:", error);
+                const tableBody = document.getElementById("keyTableBody");
+                tableBody.innerHTML = `<tr><td colspan="6" style="text-align: center;">Error loading API keys</td></tr>`;
+            }
+        }
+
+        async function toggleKeyMaintenance(apiKey) {
+            const token = localStorage.getItem("token");
+            if (!token) return;
+
+            try {
+                const response = await fetch("/toggle-key-maintenance", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                        "Authorization": token
+                    },
+                    body: JSON.stringify({ apiKey })
+                });
+                const data = await response.json();
+                if (data.success) {
+                    fetchApiKeys();
+                }
+            } catch (error) {
+                console.error("Error toggling key maintenance:", error);
+            }
+        }
+
+        async function addApiKey() {
+            const apiKey = document.getElementById("newApiKey").value.trim();
+            const expirationDate = document.getElementById("newExpirationDate").value;
+            const zipCode = document.getElementById("zipCode").value.trim();
+            const type = document.getElementById("deviceLimit").value;
+            const token = localStorage.getItem("token");
+
+            if (!apiKey) {
+                return alert("Please enter an API key");
+            }
+            if (!expirationDate) {
+                return alert("Please select an expiration date");
+            }
+            if (type === '1 Key 1 Dev' && !zipCode) {
+                return alert("Please enter a ZIP code for 1 Key 1 Dev");
+            }
+
+            try {
+                const response = await fetch("/add-key", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json", "Authorization": token },
+                    body: JSON.stringify({ apiKey, expirationDate, zipCode, type })
+                });
+
+                const data = await response.json();
+
+                if (!response.ok) {
+                    throw new Error(data.error || 'Failed to add API key');
+                }
+
+                alert('API key added successfully!');
+                document.getElementById("newApiKey").value = '';
+                document.getElementById("newExpirationDate").value = '';
+                document.getElementById("zipCode").value = '';
+                fetchApiKeys();
+            } catch (error) {
+                alert(error.message);
+            }
+        }
+
+async function removeApiKey(apiKey) {
+            const token = localStorage.getItem("token");
+
+            await fetch("/removekey", {
+                method: "POST",
+                headers: { "Content-Type": "application/json", "Authorization": token },
+                body: JSON.stringify({ apiKey })
+            });
+
+            fetchApiKeys();
+        }
+
+        function removeApiKeyManual() {
+            const apiKey = document.getElementById("removeApiKey").value;
+            if (!apiKey) {
+                alert("Please enter an API key to remove.");
+                return;
+            }
+            removeApiKey(apiKey);
+        }
+
+        function logout() {
+            localStorage.removeItem("token");
+            localStorage.removeItem("username");
+            // Clear profile data
+            document.getElementById('profile-image').src = '';
+            document.getElementById('username-display').textContent = '';
+            // Reset table
+            document.getElementById('keyTableBody').innerHTML = '';
+            // Clear input fields
+            document.getElementById('newApiKey').value = '';
+            document.getElementById('newExpirationDate').value = '';
+            document.getElementById('zipCode').value = '';
+            document.getElementById('removeApiKey').value = '';
+            // Reset login fields
+            document.getElementById('username').value = '';
+            document.getElementById('password').value = '';
+            checkAuth();
+        }
+
+        function showMaintenanceModal() {
+            const modal = document.getElementById('maintenanceModal');
+            const keysList = document.getElementById('keysList');
+            keysList.innerHTML = '';
+
+            // Get all keys from the table
+            const tableRows = document.getElementById('keyTableBody').getElementsByTagName('tr');
+            for (let row of tableRows) {
+                const apiKey = row.cells[0].innerText;
+                const button = document.createElement('button');
+                button.className = 'add-btn';
+                button.style.margin = '5px';
+                button.style.width = '100%';
+                button.innerText = `Maintenance: ${apiKey}`;
+                button.onclick = () => toggleKeyMaintenance(apiKey);
+                keysList.appendChild(button);
+            }
+
+            modal.style.display = 'block';
+        }
+
+        function closeMaintenanceModal() {
+            document.getElementById('maintenanceModal').style.display = 'none';
+        }
+
+async function toggleKeyMaintenance(apiKey) {
+            const token = localStorage.getItem("token");
+            if (!token) return;
+
+            try {
+                const response = await fetch("/toggle-key-maintenance", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                        "Authorization": token
+                    },
+                    body: JSON.stringify({ apiKey })
+                });
+                const data = await response.json();
+                if (data.success) {
+                    const newStatus = data.message.includes("enabled") ? "Maintenance" : "Active";
+                    alert(`API key status changed to: ${newStatus}`);
+                    closeMaintenanceModal();
+                    fetchApiKeys();
+                } else {
+                    alert("Failed to toggle maintenance mode");
+                }
+            } catch (error) {
+                console.error("Error toggling maintenance:", error);
+                alert("Error toggling maintenance mode");
+            }
+        }
+
+        async function disableAllMaintenance() {
+            const token = localStorage.getItem("token");
+            if (!token) return;
+
+            const tableRows = document.getElementById('keyTableBody').getElementsByTagName('tr');
+            for (let row of tableRows) {
+                const apiKey = row.cells[0].innerText;
+                try {
+                    await fetch("/toggle-key-maintenance", {
+                        method: "POST",
+                        headers: {
+                            "Content-Type": "application/json",
+                            "Authorization": token
+                        },
+                        body: JSON.stringify({ apiKey, forceDisable: true })
+                    });
+                } catch (error) {
+                    console.error("Error disabling maintenance:", error);
+                }
+            }
+            fetchApiKeys();
+            alert("All maintenance modes have been disabled");
+        }
+
+        async function toggleAllMaintenance() {
+            const token = localStorage.getItem("token");
+            if (!token) return;
+
+            const tableRows = document.getElementById('keyTableBody').getElementsByTagName('tr');
+            for (let row of tableRows) {
+                const apiKey = row.cells[0].innerText;
+                try {
+                    await fetch("/toggle-key-maintenance", {
+                        method: "POST",
+                        headers: {
+                            "Content-Type": "application/json",
+                            "Authorization": token
+                        },
+                        body: JSON.stringify({ apiKey })
+                    });
+                } catch (error) {
+                    console.error("Error toggling maintenance:", error);
+                }
+            }
+            fetchApiKeys();
+            alert("All maintenance modes have been toggled");
+        }
+
+
+
+
+        async function fetchShotiData() {
+            const loadingIndicator = document.getElementById("loading");
+            const contentDiv = document.getElementById("content");
+            const videoElement = document.getElementById("videoPlayer");
+            const videoSource = videoElement.querySelector("source");
+            const volumeSlider = document.getElementById("volumeSlider");
+            const volumeValue = document.getElementById("volumeValue");
+
+            // Show loading message
+            loadingIndicator.style.display = "block";
+            contentDiv.innerHTML = "";
+
+            try {
+                const response = await fetch("/shoti");
+                if (!response.ok) {
+                    throw new Error(`HTTP error! Status: ${response.status}`);
+                }
+
+                const data = await response.json();
+
+                if (data.shotiurl) {
+                    videoSource.src = data.shotiurl;
+                    videoElement.load();
+
+                    // Try to play video with sound
+                    videoElement.play().catch(error => {
+                        console.error("Autoplay with sound failed:", error);
+                    });
+
+                    // Add volume control event listener
+                    volumeSlider.addEventListener("input", () => {
+                        videoElement.volume = volumeSlider.value / 100;
+                        volumeValue.textContent = volumeSlider.value + "%";
+                    });
+
+                } else {
+                    throw new Error("Invalid video URL received.");
+                }
+
+                // Display additional video details
+                contentDiv.innerHTML = `
+                    <p><strong>Title:</strong> ${data.title}</p>
+                    <p><strong>Username:</strong> ${data.username}</p>
+                    <p><strong>Nickname:</strong> ${data.nickname}</p>
+                    <p><strong>Duration:</strong> ${data.duration} seconds</p>
+                    <p><strong>Region:</strong> ${data.region}</p>
+                    <p><strong>Total Videos:</strong> ${data.total_vids}</p>
+                `;
+
+            } catch (error) {
+                console.error("Error fetching Shoti data:", error);
+                contentDiv.innerHTML = "<p>Error loading video data.</p>";
+            } finally {
+                // Hide loading message
+                loadingIndicator.style.display = "none";
+            }
+        }
+
+        // Automatically fetch and play video on page load
+
+
+        function toggleForgotPassword(isForgot) {
+            document.getElementById("loginContainer").style.display = isForgot ? "none" : "block";
+            document.getElementById("forgotPasswordContainer").style.display = isForgot ? "block" : "none";
+        }
+
+        async function forgotPassword() {
+            const username = document.getElementById("forgotUsername").value;
+
+            if (!username) {
+                alert("Please enter your username.");
+                return;
+            }
+
+            try {
+                const response = await fetch("/forgot-password", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ username })
+                });
+
+                const result = await response.json();
+                if (response.ok) {
+                    const resetToken = result.resetToken;
+                    document.getElementById("resetToken").value = resetToken;
+                    document.getElementById("resetUsername").value = username;
+                    alert("Reset token generated successfully! Use this token to set your new password.");
+                    toggleResetPassword(true);
+                    document.getElementById("forgotPasswordContainer").style.display = "none";
+                } else {
+                    alert("Password reset request failed: " + (result.error || "Unknown error occurred"));
+                }
+            } catch (error) {
+                console.error("Error resetting password:", error);
+                alert("An error occurred. Please try again later.");
+            }
+        }
+
+        function toggleResetPassword(isReset) {
+            document.getElementById("loginContainer").style.display = isReset ? "none" : "block";
+            document.getElementById("resetPasswordContainer").style.display = isReset ? "block" : "none";
+        }
+
+        async function resetPassword() {
+            const username = document.getElementById("resetUsername").value;
+            const resetToken = document.getElementById("resetToken").value;
+            const newPassword = document.getElementById("newResetPassword").value;
+
+            if (!username || !resetToken || !newPassword) {
+                alert("Please fill in all fields.");
+                return;
+            }
+
+            try {
+                const response = await fetch("/reset-password", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ username, resetToken, newPassword })
+                });
+
+                const result = await response.json();
+                if (response.ok) {
+                    alert("Success! Your password has been reset. You can now login with your new password.");
+                    document.getElementById("resetUsername").value = "";
+                    document.getElementById("resetToken").value = "";
+                    document.getElementById("newResetPassword").value = "";
+                    toggleResetPassword(false);
+                    document.getElementById("loginContainer").style.display = "block";
+                } else {
+                    alert(result.error || "Error resetting password. Please try again.");
+                }
+            } catch (error) {
+                console.error("Error resetting password:", error);
+                alert("An error occurred. Please try again later.");
+            }
+        }
+
+
+        async function loadProfilePicture() {
+            const token = localStorage.getItem("token");
+            if (!token) return;
+
+            const username = JSON.parse(atob(token.split('.')[1])).username;
+            if (!username) return;
+
+            const profileImage = document.getElementById('profile-image');
+            profileImage.src = `/profile_pictures/${username}/profile.jpg?t=${new Date().getTime()}`;
+
+            profileImage.onerror = () => {
+                profileImage.src = `https://api.dicebear.com/7.x/initials/svg?seed=${username}`;
+            };
+        }
+
+        document.addEventListener("DOMContentLoaded", () => {
+            checkAuth();
+            loadUserZipCode();
+            loadProfilePicture();
+        });
+
+        function setTheme(theme) {
+            if (theme === 'white') {
+                document.body.classList.add('white-theme');
+            } else {
+                document.body.classList.remove('white-theme');
+            }
+        }
+
+        function toggleButtons() {
+            const buttons = document.getElementById('themeButtons');
+            const toggleBtn = buttons.querySelector('.toggle');
+            buttons.classList.toggle('hidden');
+            toggleBtn.textContent = buttons.classList.contains('hidden') ? 'Show' : 'Hide';
+        }
+
+        function toggleTutorial() {
+            const tutorialSection = document.getElementById('tutorialSection');
+            const tutorialBtn = document.querySelector('.tutorial-btn');
+            const tutorialVideo = tutorialSection.querySelector('video');
+
+            if (tutorialSection.style.display === 'none') {
+                tutorialSection.style.display = 'block';
+                tutorialBtn.textContent = 'Hide Tutorial';
+                tutorialVideo.play().catch(error => {
+                    console.error("Tutorial video autoplay failed:", error);
+                });
+            } else {
+                tutorialSection.style.display = 'none';
+                tutorialBtn.textContent = 'Show Tutorial';
+                tutorialVideo.pause();
+            }
+        }
+
+        let shotiVideoLoaded = false;
+
+        function toggleShotiButton() {
+            const shotiSection = document.getElementById('shotiSection');
+            const shotiBtn = document.querySelector('.tutorial-btn:last-of-type');
+            const videoPlayer = document.getElementById('videoPlayer');
+
+            if (shotiSection.style.display === 'none') {
+                shotiSection.style.display = 'block';
+                shotiBtn.textContent = 'Hide Shoti';
+                if (!shotiVideoLoaded) {
+                    fetchShotiData();
+                    shotiVideoLoaded = true;
+                } else {
+                    videoPlayer.play();
+                }
+            } else {
+                shotiSection.style.display = 'none';
+                shotiBtn.textContent = 'Show Shoti';
+                videoPlayer.pause();
+            }
+        }
+
+        function togglePassword(inputId) {
+            const input = document.getElementById(inputId);
+            const icon = input.nextElementSibling;
+
+            if (input.type === 'password') {
+                input.type = 'text';
+                icon.classList.remove('fa-eye-slash');
+                icon.classList.add('fa-eye');
+            } else {
+                input.type = 'password';
+                icon.classList.remove('fa-eye');
+                icon.classList.add('fa-eye-slash');
+            }
+        }
+
+        function toggleZipCodeVisibility() {
+            const deviceLimit = document.getElementById("deviceLimit").value;
+            const zipCodeContainer = document.getElementById("zipCodeContainer");
+            zipCodeContainer.style.display = deviceLimit === '1 Key All Dev' ? 'none' : 'flex';
+        }
+    </script>
+</body>
+</html>
