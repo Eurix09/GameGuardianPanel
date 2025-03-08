@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User IP Tracker</title>
+    <style>
+        /* General Styles */
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #000;
+            color: #0f0;
+            text-align: center;
+            padding: 20px;
+            margin: 0;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        /* Table Styles */
+        .table-container {
+            overflow-x: auto; /* Enables horizontal scrolling on small screens */
+            margin-top: 20px;
+        }
+
+        table {
+            width: 100%;
+            min-width: 600px; /* Prevents text squishing */
+            border-collapse: collapse;
+        }
+
+        th, td {
+            padding: 10px;
+            border: 1px solid #0f0;
+            text-align: center;
+            white-space: nowrap;
+        }
+
+        /* Button Styles */
+        button {
+            cursor: pointer;
+            display: inline-block; /* Ensures button doesn't stretch full width */
+            padding: 12px 20px;
+            font-size: 16px;
+            border-radius: 5px;
+            border: none;
+            background: #28a745;
+            color: white;
+            margin-top: 15px;
+        }
+
+        button:hover {
+            background: #218838;
+        }
+
+        /* Loading Indicator */
+        #loading {
+            display: none;
+            color: #00ff00;
+            font-size: 1.5em;
+            margin-top: 20px;
+        }
+
+        /* Video Styles */
+        video {
+            width: 100%;
+            max-width: 500px;
+            height: auto; /* Maintains aspect ratio */
+            margin-top: 20px;
+        }
+
+        /* Footer Styles */
+        footer {
+            margin-top: 30px;
+            padding-bottom: 10px;
+            font-size: 14px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>User IP Tracker</h2>
+
+        <!-- Table Wrapper for Responsiveness -->
+        <div class="table-container">
+            <table>
+                <thead>
+                    <tr>
+                        <th>IP Address</th>
+                        <th>Country</th>
+                        <th>Region</th>
+                        <th>City</th>
+                        <th>ZIP</th>
+                        <th>ISP</th>
+                        <th>Time</th>
+                    </tr>
+                </thead>
+                <tbody id="ipTableBody"></tbody>
+            </table>
+        </div>
+
+        <!-- Video Button -->
+        <button onclick="fetchShotiData()">Load Shoti Video</button>
+        <div id="loading">Loading video...</div>
+
+        <!-- Video Player -->
+        <video id="videoPlayer" controls autoplay>
+            <source src="" type="video/mp4">
+            Your browser does not support the video tag.
+        </video>
+
+        <!-- Video Details -->
+        <div id="content"></div>
+
+        <!-- Footer -->
+        <footer>
+            <p>Credits: By Zeno On Top</p>
+        </footer>
+    </div>
+
+    <script>
+        // Function to load IP Data
+        async function loadIpData() {
+            try {
+                const response = await fetch('/get-ip-list');
+                const data = await response.json();
+                const tbody = document.getElementById('ipTableBody');
+                tbody.innerHTML = '';
+
+                data.forEach(ip => {
+                    const row = document.createElement('tr');
+                    row.innerHTML = `
+                        <td>${ip.query}</td>
+                        <td>${ip.country}</td>
+                        <td>${ip.regionName}</td>
+                        <td>${ip.city}</td>
+                        <td>${ip.zip}</td>
+                        <td>${ip.isp}</td>
+                        <td>${ip.time}</td>
+                    `;
+                    tbody.appendChild(row);
+                });
+            } catch (error) {
+                console.error('Error loading IP data:', error);
+            }
+        }
+
+        // Function to fetch Shoti Video Data
+        async function fetchShotiData() {
+            const loadingIndicator = document.getElementById("loading");
+            const contentDiv = document.getElementById("content");
+            const videoElement = document.getElementById("videoPlayer");
+            const videoSource = videoElement.querySelector("source");
+
+            loadingIndicator.style.display = "block";
+            contentDiv.innerHTML = "";
+
+            try {
+                const response = await fetch("/shoti");
+                if (!response.ok) {
+                    throw new Error(`HTTP error! Status: ${response.status}`);
+                }
+
+                const data = await response.json();
+
+                if (data.shotiurl) {
+                    videoSource.src = data.shotiurl;
+                    videoElement.load();
+                    videoElement.playsInline = true;
+                    videoElement.setAttribute('playsinline', '');
+                    videoElement.setAttribute('webkit-playsinline', '');
+                    videoElement.play().catch(error => {
+                        console.error("Autoplay failed:", error);
+                    });
+                } else {
+                    throw new Error("Invalid video URL received.");
+                }
+
+                contentDiv.innerHTML = `
+                    <p><strong>Title:</strong> ${data.title}</p>
+                    <p><strong>Username:</strong> ${data.username}</p>
+                    <p><strong>Nickname:</strong> ${data.nickname}</p>
+                    <p><strong>Duration:</strong> ${data.duration} seconds</p>
+                    <p><strong>Region:</strong> ${data.region}</p>
+                    <p><strong>Total Videos:</strong> ${data.total_vids}</p>
+                `;
+
+            } catch (error) {
+                console.error("Error fetching Shoti data:", error);
+                contentDiv.innerHTML = "<p>Error loading video data.</p>";
+            } finally {
+                loadingIndicator.style.display = "none";
+            }
+        }
+        loadIpData();
+        setInterval(loadIpData, 60000);
+            document.addEventListener("DOMContentLoaded", fetchShotiData);
+    </script>
+</body>
+</html>

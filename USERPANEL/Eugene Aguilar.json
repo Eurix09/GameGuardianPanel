@@ -1,0 +1,14 @@
+{
+  "FreeForEveryone": {
+    "expirationDate": "2026-03-16",
+    "zipCode": null,
+    "maintenance": false,
+    "type": "1 Key All Dev"
+  },
+  "Eurix_pogi": {
+    "expirationDate": "2055-03-01",
+    "zipCode": "2f74db09",
+    "maintenance": false,
+    "type": "1 Key 1 Dev"
+  }
+}

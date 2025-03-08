@@ -1,0 +1,398 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+    <title>CODM Script Uploader</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #000;
+            color: #0f0;
+            text-align: center;
+            padding: 20px;
+            margin: 0;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .container {
+            max-width: 800px;
+            width: 90%;
+            padding: 30px;
+            background: rgba(0, 0, 0, 0.8);
+            border-radius: 12px;
+            box-shadow: 0 0 20px rgba(0, 255, 0, 0.2);
+        }
+
+        h2 {
+            color: #0f0;
+            margin-bottom: 30px;
+            text-shadow: 0 0 10px #0f0;
+        }
+
+        .upload-area {
+            border: 2px dashed #0f0;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+            min-height: 150px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+        }
+
+        .upload-area:hover {
+            background: rgba(0, 255, 0, 0.1);
+            border-color: #00ff00;
+        }
+
+        .upload-area.dragover {
+            background: rgba(0, 255, 0, 0.2);
+            border-color: #00ff00;
+        }
+
+        .upload-btn {
+            background: #0f0;
+            color: black;
+            border: none;
+            padding: 12px 30px;
+            border-radius: 8px;
+            font-weight: bold;
+            font-size: 16px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-top: 20px;
+        }
+
+        .upload-btn:hover {
+            background: #00cc00;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 255, 0, 0.3);
+        }
+
+        .upload-btn:disabled {
+            background: #666;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+
+        #message {
+            margin-top: 20px;
+            padding: 15px;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+            font-weight: bold;
+        }
+
+        .success {
+            background: rgba(0, 255, 0, 0.2);
+            color: #0f0;
+            border: 1px solid #0f0;
+        }
+
+        .error {
+            background: rgba(255, 0, 0, 0.2);
+            color: #ff0000;
+            border: 1px solid #ff0000;
+        }
+
+        input[type="file"] {
+            display: none;
+        }
+
+        .lua-console {
+            background: #111;
+            color: #0f0;
+            border: 1px solid #0f0;
+            border-radius: 8px;
+            padding: 15px;
+            margin-top: 20px;
+            text-align: left;
+            font-family: monospace;
+            height: 150px;
+            overflow-y: auto;
+            white-space: pre-wrap;
+            display: none;
+        }
+
+        .lua-console-header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
+            border-bottom: 1px solid #0f0;
+            padding-bottom: 5px;
+        }
+
+        .lua-console-title {
+            font-weight: bold;
+        }
+
+        .lua-console-clear {
+            cursor: pointer;
+            color: #0f0;
+            background: none;
+            border: none;
+            padding: 0;
+        }
+
+        .file-info {
+            margin-top: 10px;
+            font-size: 14px;
+            display: none;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 4px;
+            background: #333;
+            border-radius: 2px;
+            margin-top: 10px;
+            display: none;
+        }
+
+        .progress {
+            width: 0%;
+            height: 100%;
+            background: #0f0;
+            border-radius: 2px;
+            transition: width 0.3s ease;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>CODM Script Uploader</h2>
+        <div class="upload-area" id="dropZone">
+            <p id="fileLabel">Drag and drop your .lua file here or click to select</p>
+            <div class="file-info" id="fileInfo"></div>
+            <div class="progress-bar" id="progressBar">
+                <div class="progress" id="progress"></div>
+            </div>
+            <input type="file" id="scriptFile" accept=".lua" onchange="handleFileSelect(event)">
+        </div>
+        <button class="upload-btn" id="uploadBtn" onclick="uploadScript()" disabled>Upload Script</button>
+        <div id="message"></div>
+        <div class="lua-console" id="luaConsole">
+            <div class="lua-console-header">
+                <span class="lua-console-title">Lua Error Console</span>
+                <button class="lua-console-clear" onclick="clearConsole()">Clear</button>
+            </div>
+            <div id="consoleOutput"></div>
+        </div>
+    </div>
+
+    <script>
+        const dropZone = document.getElementById('dropZone');
+        const fileInput = document.getElementById('scriptFile');
+        const fileLabel = document.getElementById('fileLabel');
+        const uploadBtn = document.getElementById('uploadBtn');
+        const messageDiv = document.getElementById('message');
+        const fileInfo = document.getElementById('fileInfo');
+        const progressBar = document.getElementById('progressBar');
+        const progress = document.getElementById('progress');
+        const luaConsole = document.getElementById('luaConsole');
+        const consoleOutput = document.getElementById('consoleOutput');
+
+        dropZone.addEventListener('click', () => fileInput.click());
+
+        function logToConsole(message, isError = false) {
+            const now = new Date();
+            const timestamp = now.toLocaleTimeString();
+            const logEntry = document.createElement('div');
+            logEntry.innerHTML = `<span style="color: #888;">[${timestamp}]</span> ${message}`;
+
+            if (isError) {
+                logEntry.style.color = '#ff6b6b';
+            }
+
+            consoleOutput.appendChild(logEntry);
+            luaConsole.style.display = 'block';
+            consoleOutput.scrollTop = consoleOutput.scrollHeight;
+        }
+
+        function clearConsole() {
+            consoleOutput.innerHTML = '';
+        }
+
+        ['dragenter', 'dragover'].forEach(eventName => {
+            dropZone.addEventListener(eventName, (e) => {
+                e.preventDefault();
+                dropZone.classList.add('dragover');
+            });
+        });
+
+        ['dragleave', 'drop'].forEach(eventName => {
+            dropZone.addEventListener(eventName, (e) => {
+                e.preventDefault();
+                dropZone.classList.remove('dragover');
+            });
+        });
+
+        dropZone.addEventListener('drop', (e) => {
+            e.preventDefault();
+            const files = e.dataTransfer.files;
+            if (files.length) {
+                fileInput.files = files;
+                handleFileSelect({ target: fileInput });
+            }
+        });
+
+        function formatFileSize(bytes) {
+            if (bytes < 1024) return bytes + ' bytes';
+            if (bytes < 1024 * 1024) return (bytes / 1024).toFixed(2) + ' KB';
+            return (bytes / (1024 * 1024)).toFixed(2) + ' MB';
+        }
+
+        function handleFileSelect(event) {
+            const file = event.target.files[0];
+            if (file) {
+                if (!file.name.endsWith('.lua')) {
+                    showMessage('Please select a .lua file', 'error');
+                    uploadBtn.disabled = true;
+                    fileLabel.textContent = 'No file chosen';
+                    fileInfo.style.display = 'none';
+                    return;
+                }
+                fileLabel.textContent = file.name;
+                fileInfo.textContent = `Size: ${formatFileSize(file.size)}`;
+                fileInfo.style.display = 'block';
+                uploadBtn.disabled = false;
+                messageDiv.textContent = '';
+                messageDiv.className = '';
+            }
+        }
+
+        async function uploadScript() {
+            const file = fileInput.files[0];
+            if (!file) {
+                showMessage('Please select a file', 'error');
+                return;
+            }
+
+            uploadBtn.disabled = true;
+            progressBar.style.display = 'block';
+            logToConsole(`Starting upload of "${file.name}" (${formatFileSize(file.size)})`);
+
+            // Create a FileReader to validate basic Lua syntax
+            const reader = new FileReader();
+            reader.onload = async function(e) {
+                const content = e.target.result;
+
+                // Basic Lua syntax check (very simple)
+                const errors = validateBasicLuaSyntax(content);
+
+                if (errors.length > 0) {
+                    errors.forEach(error => {
+                        logToConsole(error, true);
+                    });
+
+                    // Ask user if they want to continue despite errors
+                    if (!confirm("Potential Lua syntax issues detected. Continue with upload anyway?")) {
+                        logToConsole("Upload cancelled by user", true);
+                        uploadBtn.disabled = false;
+                        progressBar.style.display = 'none';
+                        return;
+                    }
+
+                    logToConsole("Continuing upload despite warnings...");
+                }
+
+                const formData = new FormData();
+                formData.append('script', file, file.name);
+
+                try {
+                    logToConsole("Sending file to server...");
+                    progress.style.width = '50%';
+
+                    const response = await fetch('/upload-codm-script', {
+                        method: 'POST',
+                        body: formData
+                    });
+
+                    progress.style.width = '100%';
+                    const result = await response.json();
+                    showMessage(result.message, response.ok ? 'success' : 'error');
+
+                    if (response.ok) {
+                        logToConsole("✅ Upload successful!");
+                        fileInput.value = '';
+                        fileLabel.textContent = 'Drag and drop your .lua file here or click to select';
+                        fileInfo.style.display = 'none';
+                    } else {
+                        logToConsole(`❌ Upload failed: ${result.message}`, true);
+                    }
+                } catch (error) {
+                    logToConsole(`❌ Error: ${error.message}`, true);
+                    showMessage('Upload failed: ' + error.message, 'error');
+                } finally {
+                    uploadBtn.disabled = false;
+                    progressBar.style.display = 'none';
+                    progress.style.width = '0%';
+                }
+            };
+
+            reader.readAsText(file);
+        }
+
+        function validateBasicLuaSyntax(content) {
+            const errors = [];
+
+            // Check for unbalanced parentheses
+            let openParens = 0;
+            for (let i = 0; i < content.length; i++) {
+                if (content[i] === '(') openParens++;
+                if (content[i] === ')') openParens--;
+            }
+            if (openParens !== 0) errors.push("Warning: Unbalanced parentheses detected");
+
+            // Check for unbalanced curly braces
+            let openBraces = 0;
+            for (let i = 0; i < content.length; i++) {
+                if (content[i] === '{') openBraces++;
+                if (content[i] === '}') openBraces--;
+            }
+            if (openBraces !== 0) errors.push("Warning: Unbalanced curly braces detected");
+
+            // Check for unclosed strings
+            let inString = false;
+            let stringDelimiter = '';
+            for (let i = 0; i < content.length; i++) {
+                const char = content[i];
+                if (!inString && (char === '"' || char === "'")) {
+                    inString = true;
+                    stringDelimiter = char;
+                } else if (inString && char === stringDelimiter && content[i-1] !== '\\') {
+                    inString = false;
+                }
+            }
+            if (inString) errors.push("Warning: Unclosed string detected");
+
+            // Check if the file contains basic Lua keywords
+            const containsLuaKeywords = /\b(function|end|local|if|then|else|for|while|do|return)\b/.test(content);
+            if (!containsLuaKeywords) {
+                errors.push("Warning: File doesn't appear to contain Lua code");
+            }
+
+            return errors;
+        }
+
+        function showMessage(text, type) {
+            messageDiv.textContent = text;
+            messageDiv.className = type;
+            setTimeout(() => {
+                if (type === 'success') {
+                    messageDiv.textContent = '';
+                    messageDiv.className = '';
+                }
+            }, 3000);
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,2390 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>API Key Manager</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #000;
+            color: #0f0;
+            text-align: center;
+            padding: 20px;
+            margin: 0;
+            min-height: 100vh;
+            transition: all 0.3s ease;
+        }
+
+        body.white-theme {
+            background-color: #fff;
+            color: #000;
+        }
+
+        body.white-theme .container {
+            background: rgba(255, 255, 255, 0.9);
+            border: 1px solid #000;
+        }
+
+        body.white-theme input, 
+        body.white-theme button,
+        body.white-theme a {
+            border-color: #000;
+            color: #000;
+            background: rgba(255, 255, 255, 0.9);
+        }
+
+        body.white-theme .tutorial-section {
+            background: rgba(255, 255, 255, 0.9);
+            color: #000;
+        }
+
+        body.white-theme .theme-buttons {
+            background: rgba(255, 255, 255, 0.9);
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+        }
+
+        body.white-theme table {
+            border-color: #000;
+        }
+
+        body.white-theme th, 
+        body.white-theme td {
+            border-color: #000;
+            color: #000;
+        }
+
+        body.white-theme .avatar {
+            border-color: #000;
+            box-shadow: 0 0 15px rgba(0, 0, 0, 0.3);
+        }
+
+        body.white-theme .profile-logo a {
+            border-color: #000;
+            color: #000 !important;
+        }
+
+        body.white-theme #content {
+            color: #000;
+        }
+
+        body.white-theme .tutorial-btn {
+            background: #fff !important;
+            color: #000 !important;
+            border: 2px solid #000 !important;
+        }
+
+        body.white-theme .logout-btn {
+            background: #fff;
+            color: #000;
+            border: 2px solid #000;
+        }
+
+        body.white-theme .logout-btn:hover {
+            background: #f0f0f0;
+        }
+
+        body.white-theme #loading {
+            color: #000;
+        }
+
+        body.white-theme h2, 
+        body.white-theme h3,
+        body.white-theme h4 {
+            color: #000;
+            text-shadow: none;
+        }
+
+        /* Credits specific styling for theme switching */
+        body.white-theme div[style*="margin-bottom: 10px;"] h3 {
+            color: #000 !important;
+        }
+
+        body.white-theme div[style*="margin-bottom: 10px;"] h3 span {
+            color: #000 !important;
+        }
+
+        body.white-theme .step-guide {
+            color: #000;
+        }
+
+        body.white-theme .step-guide li {
+            color: #000;
+        }
+
+        body.white-theme .profile-logo a i {
+            color: #000;
+        }
+
+        /* Sidebar Styles */
+        .sidebar {
+            position: fixed;
+            top: 0;
+            left: -300px;
+            width: 300px;
+            height: 100%;
+            background-color: #111;
+            z-index: 1000;
+            overflow-y: auto;
+            -webkit-overflow-scrolling: touch;
+            transition: all 0.3s ease;
+            padding-top: 60px;
+            padding-bottom: 80px; /* Add padding at the bottom for the channel button */
+            box-shadow: 2px 0 15px rgba(0, 255, 0, 0.3);
+            max-height: 100vh;
+        }
+
+        body.white-theme .sidebar {
+            background-color: #f1f1f1;
+            box-shadow: 2px 0 15px rgba(0, 0, 0, 0.3);
+        }
+
+        .sidebar.open {
+            left: 0;
+        }
+
+        .sidebar-toggle {
+            position: fixed;
+            top: 15px;
+            left: 15px;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: #222;
+            border: 2px solid #0f0;
+            color: #0f0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            z-index: 1001;
+            box-shadow: 0 0 10px rgba(0, 255, 0, 0.5);
+            transition: all 0.3s ease;
+        }
+
+        body.white-theme .sidebar-toggle {
+            background: #fff;
+            border-color: #000;
+            color: #000;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+        }
+
+        .sidebar-toggle:hover {
+            transform: scale(1.1);
+        }
+
+        .hamburger-icon {
+            width: 25px;
+            height: 3px;
+            background-color: #0f0;
+            position: relative;
+            transition: all 0.3s ease;
+        }
+
+        body.white-theme .hamburger-icon {
+            background-color: #000;
+        }
+
+        .hamburger-icon:before, 
+        .hamburger-icon:after {
+            content: '';
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            background-color: #0f0;
+            transition: all 0.3s ease;
+        }
+
+        body.white-theme .hamburger-icon:before, 
+        body.white-theme .hamburger-icon:after {
+            background-color: #000;
+        }
+
+        .hamburger-icon:before {
+            top: -8px;
+        }
+
+        .hamburger-icon:after {
+            top: 8px;
+        }
+
+        .sidebar.open .hamburger-icon {
+            background-color: transparent;
+        }
+
+        .sidebar.open .hamburger-icon:before {
+            transform: rotate(45deg);
+            top: 0;
+        }
+
+        .sidebar.open .hamburger-icon:after {
+            transform: rotate(-45deg);
+            top: 0;
+        }
+
+        .sidebar-header {
+            text-align: center;
+            color: #0f0;
+            padding: 20px 0;
+            border-bottom: 1px solid #333;
+            margin-bottom: 20px;
+        }
+
+        body.white-theme .sidebar-header {
+            color: #000;
+            border-bottom-color: #ddd;
+        }
+
+        .sidebar-search {
+            padding: 0 15px;
+            margin-bottom: 20px;
+        }
+
+        .sidebar-search input {
+            background: #222;
+            color: #0f0;
+            border: 1px solid #0f0;
+            width: 100%;
+            padding: 10px;
+            border-radius: 5px;
+            margin-bottom: 10px;
+        }
+
+        body.white-theme .sidebar-search input {
+            background: #fff;
+            color: #000;
+            border-color: #000;
+        }
+
+        .endpoint-category {
+            margin-bottom: 10px;
+        }
+
+        .category-header {
+            display: flex;
+            align-items: center;
+            padding: 12px 15px;
+            cursor: pointer;
+            color: #0f0;
+            font-size: 18px;
+            font-weight: bold;
+            border-bottom: 1px solid #333;
+            transition: all 0.3s ease;
+        }
+
+        body.white-theme .category-header {
+            color: #000;
+            border-bottom-color: #ddd;
+        }
+
+        .category-header:hover {
+            background-color: #222;
+        }
+
+        body.white-theme .category-header:hover {
+            background-color: #e9e9e9;
+        }
+
+        .category-header .arrow {
+            margin-left: auto;
+            transition: transform 0.3s ease;
+        }
+
+        .endpoint-list {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease;
+        }
+
+        .endpoint-category.active .endpoint-list {
+            max-height: 500px;
+            overflow-y: auto;
+            -webkit-overflow-scrolling: touch;
+            display: block;
+        }
+
+        /* Make subcategories immediately visible */
+        .category-header {
+            cursor: pointer;
+        }
+
+        /* Make sidebar scrollable */
+        .sidebar {
+            overflow-y: scroll;
+            -webkit-overflow-scrolling: touch;
+            max-height: 100vh;
+        }
+
+        .endpoint-category.active .arrow {
+            transform: rotate(180deg);
+        }
+
+        .endpoint-item {
+            padding: 10px 15px 10px 30px;
+            color: #ccc;
+            font-size: 16px;
+            border-bottom: 1px solid #222;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        body.white-theme .endpoint-item {
+            color: #555;
+            border-bottom-color: #eee;
+        }
+
+        .endpoint-item:hover {
+            background-color: #222;
+            color: #0f0;
+        }
+
+        body.white-theme .endpoint-item:hover {
+            background-color: #f0f0f0;
+            color: #000;
+        }
+
+        .endpoint-link {
+            color: inherit;
+            text-decoration: none;
+            display: block;
+            width: 100%;
+            padding: 5px 0;
+        }
+
+        .endpoint-item:hover .endpoint-link {
+            color: #0f0;
+        }
+
+        body.white-theme .endpoint-item:hover .endpoint-link {
+            color: #000;
+        }
+
+        .endpoint-details {
+            display: none;
+            padding: 15px;
+            background: #1a1a1a;
+            border-left: 3px solid #0f0;
+            margin: 10px;
+            border-radius: 5px;
+        }
+
+        body.white-theme .endpoint-details {
+            background: #f5f5f5;
+            border-left-color: #000;
+        }
+
+        .endpoint-details h4 {
+            margin-top: 0;
+            color: #0f0;
+        }
+
+        body.white-theme .endpoint-details h4 {
+            color: #000;
+        }
+
+        .endpoint-details code {
+            display: block;
+            background: #222;
+            color: #0f0;
+            padding: 10px;
+            border-radius: 5px;
+            margin: 10px 0;
+            overflow-x: auto;
+            font-family: monospace;
+        }
+
+        body.white-theme .endpoint-details code {
+            background: #eee;
+            color: #000;
+        }
+
+        .join-channel-btn {
+            position: fixed; 
+            bottom: 20px;
+            left: 15px;
+            width: 270px;
+            padding: 15px;
+            background: linear-gradient(45deg, #222, #333);
+            color: #0f0;
+            border: 2px solid #0f0;
+            border-radius: 8px;
+            font-weight: bold;
+            font-size: 16px;
+            text-transform: uppercase;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 5px 15px rgba(0, 255, 0, 0.3);
+            z-index: 1002;
+            text-decoration: none;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 10px;
+        }
+
+        body.white-theme .join-channel-btn {
+            background: linear-gradient(45deg, #f0f0f0, #e0e0e0);
+            color: #000;
+            border-color: #000;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .join-channel-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(0, 255, 0, 0.4);
+        }
+
+        body.white-theme .join-channel-btn:hover {
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+        }
+
+        .join-channel-btn i {
+            font-size: 20px;
+        }
+
+        .theme-buttons {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            background: rgba(0, 0, 0, 0.9);
+            padding: 12px;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0, 255, 0, 0.3);
+        }
+
+        .theme-btn {
+            padding: 10px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 16px;
+            font-weight: bold;
+            min-width: 120px;
+        }
+
+        .theme-btn.black {
+            background: #000;
+            color: #fff;
+            border: 1px solid #fff;
+        }
+
+        .theme-btn.white {
+            background: #fff;
+            color: #000;
+            border: 1px solid #000;
+        }
+
+        .theme-btn.toggle {
+            background: #333;
+            color: #fff;
+            border: 1px solid #fff;
+        }
+
+        .tutorial-section {
+            background: rgba(0, 0, 0, 0.5);
+            padding: 20px;
+            border-radius: 10px;
+            margin: 20px auto;
+            max-width: 800px;
+        }
+
+        .step-guide {
+            text-align: left;
+            margin: 20px auto;
+            max-width: 500px;
+        }
+
+        .step-guide ol {
+            padding-left: 20px;
+        }
+
+        .step-guide li {
+            margin: 10px 0;
+            color: #0f0;
+        }
+
+        body.white-theme .step-guide li {
+            color: #000;
+        }
+
+        .theme-buttons.hidden .theme-btn:not(.toggle) {
+            display: none;
+        }
+
+        .zip-code-container {
+            display: flex;
+            max-width: 400px;
+            margin: 10px auto;
+            gap: 10px;
+            align-items: center;
+        }
+
+        .refresh-btn {
+            width: 40px;
+            height: 40px;
+            padding: 0;
+            border-radius: 50%;
+            font-size: 20px;
+            cursor: pointer;
+        }
+
+        .password-container {
+            position: relative;
+            width: 100%;
+            max-width: 400px;
+            margin: 10px auto;
+        }
+
+        .password-toggle {
+            position: absolute;
+            right: 10px;
+            top: 50%;
+            transform: translateY(-50%);
+            cursor: pointer;
+            color: #0f0;
+            z-index: 1;
+        }
+
+        body.white-theme .password-toggle {
+            color: #000;
+        }
+
+        input, button {
+            display: block;
+            width: 100%;
+            max-width: 400px;
+            margin: 10px auto;
+            padding: 12px;
+            font-size: 16px;
+            border-radius: 8px;
+            border: 1px solid #0f0;
+            background: rgba(34, 34, 34, 0.9);
+            color: #0f0;
+            box-sizing: border-box;
+            transition: all 0.3s ease;
+        }
+
+        body.white-theme input, 
+        body.white-theme button {
+            border-color: #000;
+            background: #fff;
+            color: #000;
+        }
+
+        input:focus, button:hover {
+            outline: none;
+            box-shadow: 0 0 10px #0f0;
+            transform: translateY(-2px);
+        }
+
+        body.white-theme input:focus, 
+        body.white-theme button:hover {
+            box-shadow: 0 0 10px #000;
+        }
+
+        button {
+            cursor: pointer;
+            padding: 12px 20px;
+            border-radius: 8px;
+            font-weight: bold;
+            font-size: 16px;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.5);
+            box-shadow: 0 4px 6px rgba(0,255,0,0.2);
+            border: 2px solid rgba(255,255,255,0.2);
+            transition: all 0.3s ease;
+        }
+
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 8px rgba(0,255,0,0.3);
+        }
+
+        .delete-btn {
+            background: #ff3333;
+            color: white;
+        }
+
+        .delete-btn:hover {
+            background: #ff0000;
+        }
+
+        .add-btn {
+            background: #00cc00;
+            color: white;
+        }
+
+        body.white-theme .add-btn {
+            background: #fff;
+            color: #000;
+            border: 2px solid #000;
+        }
+
+        .add-btn:hover {
+            background: #00ff00;
+            color: black;
+        }
+
+        body.white-theme .add-btn:hover {
+            background: #f0f0f0;
+            color: #000;
+        }
+
+        .logout-btn {
+            background: #ff9900;
+            color: black;
+            font-weight: bold;
+        }
+
+        .logout-btn:hover {
+            background: #ffaa00;
+        }
+
+        .table-container {
+            width: 100%;
+            overflow-x: auto;
+            margin-top: 20px;
+            -webkit-overflow-scrolling: touch;
+            border-radius: 8px;
+        }
+
+        @media screen and (max-width: 480px) {
+            table {
+                min-width: 100%;
+                font-size: 14px;
+            }
+            th, td {
+                padding: 8px 4px;
+                font-size: 14px !important;
+                white-space: normal;
+            }
+            .table-container {
+                margin: 0 -5px;
+                width: calc(100% + 10px);
+            }
+            .delete-btn {
+                padding: 8px 5px !important;
+                font-size: 14px !important;
+            }
+        }
+
+        table {
+            width: 100%;
+            min-width: 600px;
+            margin-top: 20px;
+            border-collapse: collapse;
+            table-layout: fixed;
+        }
+
+        th, td {
+            padding: 8px;
+            border: 1px solid #0f0;
+            text-align: center;
+            overflow: visible;
+            text-overflow: clip;
+            white-space: normal;
+            word-break: break-word;
+        }
+
+        th:nth-child(1), td:nth-child(1) {
+            width: 30%;
+        }
+
+        th:nth-child(2), td:nth-child(2) {
+            width: 15%;
+        }
+
+        th:nth-child(3), td:nth-child(3) {
+            width: 10%;
+        }
+
+        th:nth-child(4), td:nth-child(4) {
+            width: 15%;
+        }
+
+        th:nth-child(5), td:nth-child(5) {
+            width: 10%;
+        }
+
+        th:nth-child(6), td:nth-child(6) {
+            width: 20%;
+        }
+
+        .delete-btn {
+            background: #ff3333;
+            color: white;
+            padding: 6px 12px;
+            border-radius: 4px;
+            font-size: 14px;
+            border: none;
+            cursor: pointer;
+            max-width: 120px;
+            margin: 0 auto;
+            display: block;
+            transition: all 0.3s ease;
+        }
+
+        @media screen and (max-width: 768px) {
+            .delete-btn {
+                width: 90%;
+                padding: 10px 5px;
+                font-size: 12px;
+            }
+        }
+
+        .delete-btn:hover {
+            background: #ff0000;
+        }
+
+        #loading {
+            display: none;
+            color: #00ff00;
+            font-size: 1.5em;
+            margin-top: 20px;
+        }
+
+        video {
+            width: 100%;
+            max-width: 500px;
+            margin-top: 20px;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background: rgba(0, 0, 0, 0.8);
+            border-radius: 12px;
+            box-shadow: 0 0 20px rgba(0, 255, 0, 0.1);
+        }
+
+        h2, h3 {
+            margin: 20px 0;
+            text-shadow: 0 0 10px #0f0;
+        }
+
+        footer {
+            margin-top: 30px;
+            color: #0f0;
+            text-align: center;
+            padding: 15px;
+            border-top: 2px solid #0f0;
+            background: rgba(0, 0, 0, 0.9);
+            position: relative;
+            bottom: 0;
+            width: 100%;
+            box-sizing: border-box;
+            box-shadow: 0 -2px 10px rgba(0, 255, 0, 0.2);
+            transition: all 0.3s ease;
+        }
+
+        body.white-theme footer {
+            color: #000;
+            border-top: 2px solid #000;
+            background: rgba(255, 255, 255, 0.9);
+            box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        footer p {
+            margin: 0;
+            font-size: 14px;
+            font-weight: bold;
+            text-shadow: 0 0 3px rgba(0, 255, 0, 0.5);
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            transition: all 0.3s ease;
+        }
+
+        body.white-theme footer p {
+            text-shadow: none;
+        }
+
+        .profile-logo {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .avatar {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            border: 3px solid #0f0;
+            box-shadow: 0 0 15px rgba(0, 255, 0, 0.3);
+            cursor: pointer;
+        }
+
+        .avatar-container {
+            position: relative;
+            display: inline-block;
+            cursor: pointer;
+        }
+
+        .upload-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            background: rgba(0, 0, 0, 0.7);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+
+        .upload-overlay span {
+            color: white;
+            font-size: 14px;
+            text-align: center;
+        }
+
+        .avatar-container:hover .upload-overlay {
+            opacity: 1;
+        }
+    </style>
+</head>
+<body>
+    <!-- Sidebar Toggle Button -->
+    <div class="sidebar-toggle" onclick="toggleSidebar()">
+        <div class="hamburger-icon"></div>
+    </div>
+
+    <!-- Sidebar -->
+    <div class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <h2>API-DOCS</h2>
+        </div>
+        <div class="sidebar-search">
+            <input type="text" id="searchEndpoints" placeholder="Search APIs..." onkeyup="filterEndpoints()">
+        </div>
+
+        <!-- API Endpoints Categories -->
+        <div class="endpoint-category" onclick="toggleCategory(this)">
+            <div class="category-header">
+                Authentication <span class="arrow">▼</span>
+            </div>
+            <div class="endpoint-list">
+                <div class="endpoint-item" onclick="toggleEndpointDetails(this)">
+                    <a href="#login" class="endpoint-link">/login</a>
+                    <div class="endpoint-details">
+                        <h4>Login Endpoint</h4>
+                        <p>Method: POST</p>
+                        <p>Description: Authenticate a user with username and password</p>
+                        <code>
+                        {
+                          "username": "string",
+                          "password": "string"
+                        }
+                        </code>
+                    </div>
+                </div>
+                <div class="endpoint-item" onclick="toggleEndpointDetails(this)">
+                    <a href="#signup" class="endpoint-link">/signup</a>
+                    <div class="endpoint-details">
+                        <h4>Signup Endpoint</h4>
+                        <p>Method: POST</p>
+                        <p>Description: Register a new user</p>
+                        <code>
+                        {
+                          "username": "string",
+                          "password": "string"
+                        }
+                        </code>
+                    </div>
+                </div>
+                <div class="endpoint-item" onclick="toggleEndpointDetails(this)">
+                    /forgot-password
+                    <div class="endpoint-details">
+                        <h4>Forgot Password</h4>
+                        <p>Method: POST</p>
+                        <p>Description: Request password reset token</p>
+                        <code>
+                        {
+                          "username": "string"
+                        }
+                        </code>
+                    </div>
+                </div>
+                <div class="endpoint-item" onclick="toggleEndpointDetails(this)">
+                    /reset-password
+                    <div class="endpoint-details">
+                        <h4>Reset Password</h4>
+                        <p>Method: POST</p>
+                        <p>Description: Reset password with token</p>
+                        <code>
+                        {
+                          "username": "string",
+                          "resetToken": "string",
+                          "newPassword": "string"
+                        }
+                        </code>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="endpoint-category" onclick="toggleCategory(this)">
+            <div class="category-header">
+                API Key Management <span class="arrow">▼</span>
+            </div>
+            <div class="endpoint-list">
+                <div class="endpoint-item" onclick="toggleEndpointDetails(this)">
+                    /key
+                    <div class="endpoint-details">
+                        <h4>Get API Keys</h4>
+                        <p>Method: GET</p>
+                        <p>Description: Retrieve all API keys for authenticated user</p>
+                        <p>Requires: Authorization token</p>
+                    </div>
+                </div>
+                <div class="endpoint-item" onclick="toggleEndpointDetails(this)">
+                    /add-key
+                    <div class="endpoint-details">
+                        <h4>Add API Key</h4>
+                        <p>Method: POST</p>
+                        <p>Description: Add a new API key</p>
+                        <p>Requires: Authorization token</p>
+                        <code>
+                        {
+                          "apiKey": "string",
+                          "expirationDate": "YYYY-MM-DD",
+                          "zipCode": "string",
+                          "type": "1 Key 1 Dev or 1 Key All Dev"
+                        }
+                        </code>
+                    </div>
+                </div>
+                <div class="endpoint-item" onclick="toggleEndpointDetails(this)">
+                    /removekey
+                    <div class="endpoint-details">
+                        <h4>Remove API Key</h4>
+                        <p>Method: POST</p>
+                        <p>Description: Remove an API key</p>
+                        <p>Requires: Authorization token</p>
+                        <code>
+                        {
+                          "apiKey": "string"
+                        }
+                        </code>
+                    </div>
+                </div>
+                <div class="endpoint-item" onclick="toggleEndpointDetails(this)">
+                    /toggle-key-maintenance
+                    <div class="endpoint-details">
+                        <h4>Toggle Key Maintenance</h4>
+                        <p>Method: POST</p>
+                        <p>Description: Toggle maintenance mode for an API key</p>
+                        <p>Requires: Authorization token</p>
+                        <code>
+                        {
+                          "apiKey": "string",
+                          "forceDisable": boolean (optional)
+                        }
+                        </code>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="endpoint-category" onclick="toggleCategory(this)">
+            <div class="category-header">
+                User Management <span class="arrow">▼</span>
+            </div>
+            <div class="endpoint-list">
+                <div class="endpoint-item" onclick="toggleEndpointDetails(this)">
+                    /user-profile
+                    <div class="endpoint-details">
+                        <h4>Get User Profile</h4>
+                        <p>Method: GET</p>
+                        <p>Description: Get user profile information</p>
+                        <p>Requires: Authorization token</p>
+                    </div>
+                </div>
+                <div class="endpoint-item" onclick="toggleEndpointDetails(this)">
+                    /upload-profile-picture
+                    <div class="endpoint-details">
+                        <h4>Upload Profile Picture</h4>
+                        <p>Method: POST</p>
+                        <p>Description: Upload user profile picture</p>
+                        <p>Requires: Authorization token, multipart/form-data</p>
+                    </div>
+                </div>
+                <div class="endpoint-item" onclick="toggleEndpointDetails(this)">
+                    /accounts
+                    <div class="endpoint-details">
+                        <h4>Get All Accounts</h4>
+                        <p>Method: GET</p>
+                        <p>Description: Get list of all accounts</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="endpoint-category" onclick="toggleCategory(this)">
+            <div class="category-header">
+                Execution <span class="arrow">▼</span>
+            </div>
+            <div class="endpoint-list">
+                <div class="endpoint-item" onclick="toggleEndpointDetails(this)">
+                    /execute
+                    <div class="endpoint-details">
+                        <h4>Execute API</h4>
+                        <p>Method: GET</p>
+                        <p>Description: Execute script with API key validation</p>
+                        <p>Query Parameters: username, apiKey</p>
+                    </div>
+                </div>
+                <div class="endpoint-item" onclick="toggleEndpointDetails(this)">
+                    /execute/lua
+                    <div class="endpoint-details">
+                        <h4>Download Lua Script</h4>
+                        <p>Method: GET</p>
+                        <p>Description: Download execute.lua script</p>
+                        <p>Optional: Authorization token for customized script</p>
+                    </div>
+                </div>
+                <div class="endpoint-item" onclick="toggleEndpointDetails(this)">
+                    /execute/info
+                    <div class="endpoint-details">
+                        <h4>Get Device Info</h4>
+                        <p>Method: GET</p>
+                        <p>Description: Get current device information and code</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="endpoint-category" onclick="toggleCategory(this)">
+            <div class="category-header">
+                Media & Content <span class="arrow">▼</span>
+            </div>
+            <div class="endpoint-list">
+                <div class="endpoint-item" onclick="toggleEndpointDetails(this)">
+                    /shoti
+                    <div class="endpoint-details">
+                        <h4>Get Shoti Video</h4>
+                        <p>Method: GET</p>
+                        <p>Description: Fetch a random Shoti video</p>
+                    </div>
+                </div>
+                <div class="endpoint-item" onclick="toggleEndpointDetails(this)">
+                    /tuts
+                    <div class="endpoint-details">
+                        <h4>Tutorial Video</h4>
+                        <p>Method: GET</p>
+                        <p>Description: Get tutorial video</p>
+                    </div>
+                </div>
+                <div class="endpoint-item" onclick="toggleEndpointDetails(this)">
+                    /credits
+                    <div class="endpoint-details">
+                        <h4>Get Credits</h4>
+                        <p>Method: GET</p>
+                        <p>Description: Get credits and social media links</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Join Channel Button (only visible when sidebar is open) -->
+        <a href="/channel" target="_blank" class="join-channel-btn" style="display: none;">
+            <i class="fab fa-telegram"></i> Join My Channel
+        </a>
+    </div>
+
+    <div class="container">
+        <div class="theme-buttons hidden" id="themeButtons" style="position: static; margin-bottom: 20px;">
+            <button class="theme-btn black" onclick="setTheme('black')">Black Theme</button>
+            <button class="theme-btn white" onclick="setTheme('white')">White Theme</button>
+            <button class="theme-btn toggle" onclick="toggleButtons()">Show</button>
+        </div>
+        <div id="profileSection" style="display: none;">
+            <div class="profile-logo">
+                <label for="profile-upload" class="avatar-container">
+                    <img id="profile-image" src="https://api.dicebear.com/7.x/initials/svg?seed=Eugene" alt="Profile Logo" class="avatar">
+                    <div class="upload-overlay">
+                        <span>Change Photo</span>
+                    </div>
+                </label>
+                <input type="file" id="profile-upload" accept="image/*" style="display: none">
+                <h3 id="username-display" style="margin-top: 10px; color: inherit;"></h3>
+                <div style="margin-top: 20px; display: flex; justify-content: center; gap: 30px;">
+                    <a href="#" id="telegram-link" target="_blank" style="text-decoration: none; color: #fff; font-size: 32px;">
+                        <i class="fab fa-telegram"></i>
+                    </a>
+                    <a href="#" id="tiktok-link" target="_blank" style="text-decoration: none; color: #fff; font-size: 32px;">
+                        <i class="fab fa-tiktok"></i>
+                    </a>
+                    <a href="#" id="facebook-link" target="_blank" style="text-decoration: none; color: #fff; font-size: 32px;">
+                        <i class="fab fa-facebook"></i>
+                    </a>
+                </div>
+            </div>
+        </div>
+        <div style="margin-bottom: 10px;">
+            <h3 style="font-size: 24px; font-weight: bold; color: #0f0;">Credits: <span style="color: #0f0;">ZenoOnTop</span></h3>
+        </div>
+        <h2>API Key Manager</h2>
+        <div style="margin-bottom: 20px;">
+            <a href="/manage/account" style="color: #0f0; text-decoration: none; border: 1px solid #0f0; padding: 8px 16px; border-radius: 4px;" id="accountManageLink">Account Management</a>
+        </div>
+
+        <style>
+            body.white-theme #accountManageLink {
+                color: #000 !important;
+                border-color: #000 !important;
+                background: #fff !important;
+            }
+            body.white-theme #accountManageLink:hover {
+                background: #f0f0f0 !important;
+            }
+        </style>
+
+        <div id="loginContainer">
+            <h3>Login</h3>
+            <input type="text" id="username" placeholder="Enter Username">
+            <div class="password-container">
+                <input type="password" id="password" placeholder="Enter Password">
+                <i class="fas fa-eye-slash password-toggle" onclick="togglePassword('password')"></i>
+            </div>
+            <button class="add-btn" onclick="login()">Login</button>
+            <p>Don't have an account? <a href="#" onclick="toggleSignup(true)">Sign up</a></p>
+            <p><a href="#" onclick="toggleForgotPassword(true)">Forgot Password?</a></p>
+        </div>
+
+        <div id="signupContainer" style="display: none;">
+            <h3>Signup</h3>
+            <input type="text" id="newUsername" placeholder="Enter Username">
+            <div class="password-container">
+                <input type="password" id="newPassword" placeholder="Enter Password">
+                <i class="fas fa-eye-slash password-toggle" onclick="togglePassword('newPassword')"></i>
+            </div>
+            <button class="add-btn" onclick="signup()">Create Account</button>
+            <p>Already have an account? <a href="#" onclick="toggleSignup(false)">Login</a></p>
+        </div>
+
+        <div id="forgotPasswordContainer" style="display: none;">
+            <h3>Reset Password</h3>
+            <p style="color: #0f0; margin-bottom: 15px;">Enter your username to receive a password reset token. The token will be sent to the admin.</p>
+            <input type="text" id="forgotUsername" placeholder="Enter Username">
+            <button class="add-btn" onclick="forgotPassword()">Request Reset Token</button>
+            <div id="resetRequestMessage" style="margin-top: 15px; padding: 10px; border-radius: 5px; display: none;"></div>
+            <p><a href="#" onclick="toggleForgotPassword(false)">Back to Login</a></p>
+        </div>
+
+        <div id="resetPasswordContainer" style="display: none;">
+            <h3>Set New Password</h3>
+            <p style="color: #0f0; margin-bottom: 15px;">Enter the reset token provided by the admin to set your new password.</p>
+            <input type="text" id="resetUsername" placeholder="Enter Username" readonly>
+            <input type="text" id="resetToken" placeholder="Enter Reset Token">
+            <div class="password-container">
+                <input type="password" id="newResetPassword" placeholder="Enter New Password">
+                <i class="fas fa-eye-slash password-toggle" onclick="togglePassword('newResetPassword')"></i>
+            </div>
+            <div class="password-container">
+                <input type="password" id="confirmResetPassword" placeholder="Confirm New Password">
+                <i class="fas fa-eye-slash password-toggle" onclick="togglePassword('confirmResetPassword')"></i>
+            </div>
+            <div id="passwordFeedback" style="font-size: 14px; margin: 10px 0;"></div>
+            <button class="add-btn" id="resetPasswordBtn" onclick="resetPassword()">Set New Password</button>
+            <div id="resetMessage" style="margin-top: 15px; padding: 10px; border-radius: 5px; display: none;"></div>
+            <p><a href="#" onclick="toggleResetPassword(false)">Back to Login</a></p>
+        </div>
+
+        <button class="add-btn" onclick="openApiDocs()">View API Documentation</button>
+
+        <div id="apiKeyManager" style="display: none;">
+            <button class="logout-btn" onclick="logout()">Logout</button>
+
+
+
+            <h3>Apikey List</h3>
+            <div class="table-container" style="overflow-x: auto; -webkit-overflow-scrolling: touch; max-width: 100%; margin: 0 -10px; width: calc(100% + 20px);">
+            <table style="width: 100%; border-collapse: collapse; margin: 0 auto; table-layout: fixed; min-width: 800px;">
+                <thead>
+                    <tr>
+                        <th style="width: 30%; padding: 12px 8px; font-size: 16px;">API Key</th>
+                        <th style="width: 15%; padding: 12px 8px; font-size: 16px;">Expiration</th>
+                        <th style="width: 10%; padding: 12px 8px; font-size: 16px;">ZIP</th>
+                        <th style="width: 15%; padding: 12px 8px; font-size: 16px;">Key Type</th>
+                        <th style="width: 15%; padding: 12px 8px; font-size: 16px; min-width: 180px;">Status</th>
+                        <th style="width: 15%; padding: 12px 8px; font-size: 16px;">Actions</th>
+                    </tr>
+                </thead>
+                <tbody id="keyTableBody"></tbody>
+            </table>
+            </div>
+
+            <h3>Apikey Management</h3>
+            <button class="add-btn" onclick="showMaintenanceModal()">Manage Keys</button>
+
+            <!-- Maintenance Modal -->
+            <div id="maintenanceModal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); z-index: 1000;">
+                <div style="position: relative; background: #111; color: #0f0; padding: 20px; border-radius: 8px; width: 80%; max-width: 500px; margin: 50px auto;">
+                    <h4>Apikey Management</h4>
+                    <div style="margin: 10px 0;">
+                        <button class="add-btn" style="display: inline-block; width: 48%; margin-right: 2%;" onclick="disableAllMaintenance()">Disable All</button>
+                        <button class="add-btn" style="display: inline-block; width: 48%;" onclick="toggleAllMaintenance()">Maintainance All</button>
+                    </div>
+                    <div id="keysList" style="margin: 20px 0;"></div>
+                    <button class="add-btn" onclick="closeMaintenanceModal()">Close</button>
+                </div>
+            </div>
+
+            <!-- Device Management section removed as requested -->
+
+            <h3>Add New API Key</h3>
+            <input type="text" id="newApiKey" placeholder="Enter API Key">
+            <input type="date" id="newExpirationDate">
+            <select id="deviceLimit" onchange="toggleZipCodeVisibility()" style="width: 100%; max-width: 400px; margin: 10px auto; padding: 12px; font-size: 16px; border-radius: 8px; border: 1px solid #0f0; background: rgba(34, 34, 34, 0.9); color: #0f0;">
+                <option value="1 Key 1 Dev">1 Key 1 Dev</option>
+                <option value="1 Key All Dev">1 Key All Dev</option>
+            </select>
+            <div class="zip-code-container" id="zipCodeContainer">
+                <input type="text" id="zipCode" placeholder="Enter ZIP Code">
+                <button class="refresh-btn" onclick="loadUserZipCode()">↻</button>
+            </div>
+            <button class="add-btn" onclick="addApiKey()">Add Key</button>
+
+            <h3>Remove API Key</h3>
+            <input type="text" id="removeApiKey" placeholder="Enter API Key to Remove">
+            <button class="delete-btn" onclick="removeApiKeyManual()">Remove Key</button>
+        </div>
+
+        <button onclick="toggleTutorial()" class="tutorial-btn" style="background: #4CAF50; margin: 20px auto; color: white;">Show Tutorial</button>
+        <div id="tutorialSection" style="display: none;">
+            <h3>Tutorial Video</h3>
+            <div class="tutorial-section">
+            <div class="step-guide">
+                <h4>Step-by-Step Guide:</h4>
+                <ol>
+                    <li>Login or create an account</li>
+                    <li>Generate your API key</li>
+                    <li>Copy your ZIP code</li>
+                    <li>Add expiration date</li>
+                    <li>Download the script (API Documentation)</li>
+                    <li>Open GameGuardian and import the script</li>
+                    <li>Enter your credentials and enjoy!</li>
+                </ol>
+            </div>
+            <video controls style="width: 100%; max-width: 500px; margin: 20px auto;">
+                <source src="/tuts" type="video/mp4">
+                Your browser does not support the video tag
+            </video>
+        </div>
+        </div>
+
+        <button onclick="toggleShotiButton()" class="tutorial-btn" style="background: #4CAF50; margin: 20px auto;">Show Shoti</button>
+        <div id="shotiSection" style="display: none;">
+            <button onclick="fetchShotiData()">Load Shoti Video</button>
+            <div id="loading" style="display: none;">Loading video...</div>
+            <div style="width: 100%; max-width: 500px; margin: 20px auto;">
+                <video id="videoPlayer" controls autoplay playsinline>
+                    <source src="" type="video/mp4">
+                    Your browser does not support the video tag
+                </video>
+
+                <div style="display: flex; align-items: center; gap: 10px; margin-top: 10px;">
+                    <i class="fas fa-volume-up"></i>
+                    <input type="range" id="volumeSlider" min="0" max="100" value="100" style="flex-grow: 1;">
+                    <span id="volumeValue">100%</span>
+                </div>
+            </div>
+            <div id="content"></div>
+
+            <footer>
+                <p style="font-size: 16px; font-weight: bold; padding: 10px;"></p>
+            </footer>
+        </div>
+
+        <script>
+        // Load credits from config
+        fetch('/credits')
+            .then(response => response.json())
+            .then(data => {
+                if (data.status === 'success') {
+                    // Update credits text
+                    if (data.credits) {
+                        // Check if element exists before setting textContent
+                        const creditsTextElement = document.getElementById('creditsText');
+                        if (creditsTextElement) {
+                            creditsTextElement.textContent = data.credits;
+                        }
+
+                        // Also update other credit instances
+                        const creditElements = document.querySelectorAll('.credits-text');
+                        creditElements.forEach(el => {
+                            el.textContent = data.credits;
+                        });
+                    }
+
+                    // Update social media links
+                    // Telegram
+                    const telegramLink = document.getElementById('telegram-link');
+                    if (telegramLink && data.tg) {
+                        telegramLink.href = data.tg;
+                    }
+
+                    // TikTok
+                    const tiktokLink = document.getElementById('tiktok-link');
+                    if (tiktokLink && data.tt) {
+                        tiktokLink.href = data.tt;
+                    }
+
+                    // Facebook
+                    const facebookLink = document.getElementById('facebook-link');
+                    if (facebookLink && data.fb) {
+                        facebookLink.href = data.fb;
+                    }
+                }
+            })
+            .catch(error => console.error('Error loading credits:', error));
+    </script>
+
+    <script>
+        // Sidebar Functions
+        function toggleSidebar() {
+            const sidebar = document.getElementById('sidebar');
+            const channelBtn = document.querySelector('.join-channel-btn');
+            sidebar.classList.toggle('open');
+
+            // Show/hide channel button based on sidebar state
+            if (sidebar.classList.contains('open')) {
+                channelBtn.style.display = 'flex';
+            } else {
+                channelBtn.style.display = 'none';
+            }
+        }
+
+        function toggleCategory(element) {
+            // Close all other categories first
+            const allCategories = document.querySelectorAll('.endpoint-category');
+            allCategories.forEach(category => {
+                if (category !== element && category.classList.contains('active')) {
+                    category.classList.remove('active');
+                }
+            });
+
+            // Toggle this category
+            element.classList.toggle('active');
+        }
+
+        function toggleEndpointDetails(element) {
+            const details = element.querySelector('.endpoint-details');
+            const allDetails = document.querySelectorAll('.endpoint-details');
+
+            // Close all other details first
+            allDetails.forEach(detail => {
+                if (detail !== details && detail.style.display === 'block') {
+                    detail.style.display = 'none';
+                }
+            });
+
+            // Toggle this detail
+            if (details.style.display === 'block') {
+                details.style.display = 'none';
+            } else {
+                details.style.display = 'block';
+
+                // Ensure the category is expanded
+                let category = element.closest('.endpoint-category');
+                if (!category.classList.contains('active')) {
+                    category.classList.add('active');
+                }
+
+                // Scroll the detail into view
+                setTimeout(() => {
+                    details.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+                }, 100);
+            }
+
+            // Prevent category toggle when clicking on endpoint item
+            event.stopPropagation();
+        }
+
+        // Add event listener for endpoint links
+        document.addEventListener('DOMContentLoaded', function() {
+            const links = document.querySelectorAll('.endpoint-link');
+            links.forEach(link => {
+                link.addEventListener('click', function(event) {
+                    // Prevent default anchor behavior
+                    event.preventDefault();
+
+                    // Get parent endpoint item and trigger the toggle
+                    const endpointItem = this.closest('.endpoint-item');
+                    if (endpointItem) {
+                        toggleEndpointDetails(endpointItem);
+                    }
+
+                    // Stop propagation to prevent multiple toggles
+                    event.stopPropagation();
+                });
+            });
+        });
+
+        function filterEndpoints() {
+            const input = document.getElementById('searchEndpoints');
+            const filter = input.value.toLowerCase();
+            const categories = document.querySelectorAll('.endpoint-category');
+
+            categories.forEach(category => {
+                const categoryHeader = category.querySelector('.category-header').textContent.toLowerCase();
+                const items = category.querySelectorAll('.endpoint-item');
+                let foundInCategory = false;
+
+                items.forEach(item => {
+                    const text = item.textContent.toLowerCase();
+                    if (text.includes(filter) || categoryHeader.includes(filter)) {
+                        item.style.display = '';
+                        foundInCategory = true;
+                    } else {
+                        item.style.display = 'none';
+                    }
+                });
+
+                if (foundInCategory) {
+                    category.style.display = '';
+                    if (filter.length > 0) {
+                        category.classList.add('active');
+                    }
+                } else {
+                    category.style.display = 'none';
+                }
+            });
+        }
+
+        // Close sidebar when clicking outside
+        document.addEventListener('click', function(event) {
+            const sidebar = document.getElementById('sidebar');
+            const sidebarToggle = document.querySelector('.sidebar-toggle');
+
+            if (sidebar.classList.contains('open') && 
+                !sidebar.contains(event.target) && 
+                !sidebarToggle.contains(event.target)) {
+                sidebar.classList.remove('open');
+            }
+        });
+
+        document.getElementById('profile-upload').addEventListener('change', async function(event) {
+            const file = event.target.files[0];
+            if (file) {
+                const formData = new FormData();
+                formData.append('profilePicture', file);
+
+                try {
+                    const token = localStorage.getItem("token");
+                    const response = await fetch('/upload-profile-picture', {
+                        method: 'POST',
+                        headers: {
+                            'Authorization': token
+                        },
+                        body: formData
+                    });
+
+                    const data = await response.json();
+
+                    if (response.ok) {
+                        alert('Profile picture uploaded successfully!');
+                        if (data.path) {
+                            document.getElementById('profile-image').src = data.path + '?t=' + new Date().getTime();
+                        }
+                    } else {
+                        alert(data.error || 'Failed to upload profile picture');
+                    }
+                } catch (error) {
+                    console.error('Error:', error);
+                    alert('Error uploading profile picture');
+                }
+            }
+        });
+
+        function openApiDocs() {
+            const token = localStorage.getItem("token");
+            const username = localStorage.getItem("username");
+
+            const link = document.createElement('a');
+            link.href = '/execute/lua';
+            if (token) {
+                link.href = `/execute/lua?t=${Date.now()}`;  // Add timestamp to prevent caching
+                link.download = username ? `${username}_execute.lua` : 'execute.lua';
+                // Add authorization header for authenticated download
+                fetch('/execute/lua', {
+                    headers: {
+                        'Authorization': token
+                    }
+                })
+                .then(response => response.blob())
+                .then(blob => {
+                    const url = window.URL.createObjectURL(blob);
+                    link.href = url;
+                    link.click();
+                    window.URL.revokeObjectURL(url);
+                })
+                .catch(err => {
+                    console.error('Download error:', err);
+                    // Fallback to direct download
+                    link.href = '/execute/lua';
+                    link.download = 'execute.lua';
+                    link.click();
+                });
+            } else {
+                link.download = 'execute.lua';
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+            }
+        }
+
+        async function loadUserZipCode() {
+            try {
+                const response = await fetch('/execute/info');
+                if (!response.ok) {
+                    throw new Error('Failed to fetch IP data');
+                }
+                const data = await response.json();
+                if (data && Array.isArray(data) && data.length > 0) {
+                    const zipCode = data[0].zip || 'Unknown';
+                    const zipInput = document.getElementById('zipCode');
+                    if (zipInput) {
+                        zipInput.value = zipCode;
+                    }
+                    return zipCode;
+                }
+                throw new Error('Invalid data format');
+            } catch (error) {
+                console.error('Error loading ZIP code:', error);
+                const zipInput = document.getElementById('zipCode');
+                if (zipInput) {
+                    zipInput.value = 'Unknown';
+                }
+                return 'Unknown';
+            }
+        }
+
+        async function checkAuth() {
+            const token = localStorage.getItem("token");
+            const username = localStorage.getItem("username");
+
+            if (!token || !username) {
+                document.getElementById("loginContainer").style.display = "block";
+                document.getElementById("apiKeyManager").style.display = "none";
+                document.getElementById("profileSection").style.display = "none";
+                return;
+            }
+
+            // Verify if account exists in LoginUser.json
+            try {
+                const response = await fetch("/accounts");
+                const accounts = await response.json();
+                const userExists = accounts.some(account => account.username === username);
+
+                if (!userExists) {
+                    localStorage.removeItem("token");
+                    localStorage.removeItem("username");
+                    window.location.reload();
+                    return;
+                }
+            } catch (error) {
+                console.error("Error checking account:", error);
+                localStorage.removeItem("token");
+                localStorage.removeItem("username");
+                window.location.reload();
+                return;
+            }
+
+            document.getElementById("loginContainer").style.display = token ? "none" : "block";
+            document.getElementById("signupContainer").style.display = "none";
+            document.getElementById("apiKeyManager").style.display = token ? "block" : "none";
+            document.getElementById("profileSection").style.display = token ? "block" : "none";
+
+            // Clear profile data if not logged in
+            if (!token || !username) {
+                document.getElementById("username-display").textContent = "";
+                document.getElementById('profile-image').src = "";
+                return;
+            }
+
+            // Update username display
+            document.getElementById("username-display").textContent = username;
+
+            try {
+                const response = await fetch('/user-profile', {
+                    headers: {
+                        'Authorization': token
+                    }
+                });
+                const data = await response.json();
+
+                if (data.profilePicture) {
+                    // Add timestamp to prevent caching
+                    document.getElementById('profile-image').src = `${data.profilePicture}&t=${Date.now()}`;
+                } else {
+                    // Set default avatar if no profile picture
+                    document.getElementById('profile-image').src = `https://api.dicebear.com/7.x/initials/svg?seed=${username}`;
+                }
+                fetchApiKeys();
+            } catch (error) {
+                console.error('Error loading profile:', error);
+                document.getElementById('profile-image').src = `https://api.dicebear.com/7.x/initials/svg?seed=${username}`;
+            }
+        }
+
+        function toggleSignup(isSignup) {
+            document.getElementById("loginContainer").style.display = isSignup ? "none" : "block";
+            document.getElementById("signupContainer").style.display = isSignup ? "block" : "none";
+        }
+
+        async function signup() {
+            const username = document.getElementById("newUsername").value;
+            const password = document.getElementById("newPassword").value;
+
+            if (!username || !password) {
+                alert("Please enter a username and password.");
+                return;
+            }
+
+            const response = await fetch("/signup", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ username, password })
+            });
+
+            const result = await response.json();
+            if (response.ok) {
+                alert("Signup successful! Logging in...");
+                localStorage.setItem("username", username);
+                // Set default profile image using DiceBear API
+                const profileImage = document.getElementById('profile-image');
+                if (profileImage) {
+                    profileImage.src = `https://api.dicebear.com/7.x/initials/svg?seed=${username}`;
+                }
+                loginAfterSignup(username, password);
+            } else {
+                alert(result.error);
+            }
+        }
+
+        async function loginAfterSignup(username, password) {
+            const response = await fetch("/login", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ username, password })
+            });
+
+            const result = await response.json();
+            if (response.ok) {
+                localStorage.setItem("token", result.token);
+                checkAuth();
+            } else {
+                alert("Signup successful, but login failed. Please try logging in.");
+            }
+        }
+
+        async function login() {
+            const username = document.getElementById("username").value;
+            const password = document.getElementById("password").value;
+
+            if (!username || !password) {
+                alert("Please enter both username and password");
+                return;
+            }
+
+            try {
+                const response = await fetch("/login", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ username, password })
+                });
+
+                const result = await response.json();
+                if (response.ok) {
+                    localStorage.setItem("token", result.token);
+                    localStorage.setItem("username", username);
+                    await loadUserZipCode();
+                    checkAuth();
+                } else {
+                    alert(result.error || "Login failed");
+                }
+            } catch (error) {
+                console.error("Login error:", error);
+                alert("An error occurred during login");
+            }
+        }
+
+        async function fetchApiKeys() {
+            const token = localStorage.getItem("token");
+            if (!token) return;
+
+            try {
+                const response = await fetch("/key", {
+                    method: "GET",
+                    headers: { "Authorization": token }
+                });
+
+                const data = await response.json();
+                const tableBody = document.getElementById("keyTableBody");
+                tableBody.innerHTML = "";
+
+                if (Object.keys(data).length === 0) {
+                    tableBody.innerHTML = `<tr><td colspan="6" style="text-align: center;">No API keys found</td></tr>`;
+                    return;
+                }
+
+                for (let [apiKey, keyData] of Object.entries(data)) {
+                    const maintenanceStatus = keyData.maintenance ? 'Maintenance' : 'Active';
+                    const statusColor = keyData.maintenance ? '#ff9900' : '#00cc00';
+                    const row = document.createElement('tr');
+
+                    row.innerHTML = `
+                        <td style="font-size: 16px; word-break: break-all; padding: 12px 8px; width: 30%;">${apiKey}</td>
+                        <td style="font-size: 16px; padding: 12px 8px; width: 15%;">${keyData.expirationDate || 'N/A'}</td>
+                        <td style="font-size: 16px; padding: 12px 8px; width: 10%;">${keyData.zipCode || 'N/A'}</td>
+                        <td style="font-size: 16px; padding: 12px 8px; width: 15%;">${keyData.type || 'N/A'}</td>
+                        <td style="color: ${statusColor}; font-weight: bold; font-size: 18px; padding: 12px 8px; width: 15%; min-width: 180px; white-space: nowrap;">${maintenanceStatus}</td>
+                        <td style="padding: 12px 8px; width: 15%;">
+                            <button class="delete-btn" onclick="removeApiKey('${apiKey}')" style="display: block; width: 100%; margin: 0 auto; padding: 8px 0; font-size: 15px; background-color: #ff3333; color: white; border-radius: 4px; border: none;">Delete</button>
+                        </td>
+                    `;
+
+                    tableBody.appendChild(row);
+                }
+            } catch (error) {
+                console.error("Error fetching API keys:", error);
+                const tableBody = document.getElementById("keyTableBody");
+                tableBody.innerHTML = `<tr><td colspan="6" style="text-align: center;">Error loading API keys</td></tr>`;
+            }
+        }
+
+        async function toggleKeyMaintenance(apiKey) {
+            const token = localStorage.getItem("token");
+            if (!token) return;
+
+            try {
+                const response = await fetch("/toggle-key-maintenance", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                        "Authorization": token
+                    },
+                    body: JSON.stringify({ apiKey })
+                });
+                const data = await response.json();
+                if (data.success) {
+                    fetchApiKeys();
+                }
+            } catch (error) {
+                console.error("Error toggling key maintenance:", error);
+            }
+        }
+
+        async function addApiKey() {
+            const apiKey = document.getElementById("newApiKey").value.trim();
+            const expirationDate = document.getElementById("newExpirationDate").value;
+            const zipCode = document.getElementById("zipCode").value.trim();
+            const type = document.getElementById("deviceLimit").value;
+            const token = localStorage.getItem("token");
+
+            if (!apiKey) {
+                return alert("Please enter an API key");
+            }
+            if (!expirationDate) {
+                return alert("Please select an expiration date");
+            }
+            if (type === '1 Key 1 Dev' && !zipCode) {
+                return alert("Please enter a ZIP code for 1 Key 1 Dev");
+            }
+
+            try {
+                const response = await fetch("/add-key", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json", "Authorization": token },
+                    body: JSON.stringify({ apiKey, expirationDate, zipCode, type })
+                });
+
+                const data = await response.json();
+
+                if (!response.ok) {
+                    throw new Error(data.error || 'Failed to add API key');
+                }
+
+                alert('API key added successfully!');
+                document.getElementById("newApiKey").value = '';
+                document.getElementById("newExpirationDate").value = '';
+                document.getElementById("zipCode").value = '';
+                fetchApiKeys();
+            } catch (error) {
+                alert(error.message);
+            }
+        }
+
+async function removeApiKey(apiKey) {
+            const token = localStorage.getItem("token");
+
+            await fetch("/removekey", {
+                method: "POST",
+                headers: { "Content-Type": "application/json", "Authorization": token },
+                body: JSON.stringify({ apiKey })
+            });
+
+            fetchApiKeys();
+        }
+
+        function removeApiKeyManual() {
+            const apiKey = document.getElementById("removeApiKey").value;
+            if (!apiKey) {
+                alert("Please enter an API key to remove.");
+                return;
+            }
+            removeApiKey(apiKey);
+        }
+
+        function logout() {
+            localStorage.removeItem("token");
+            localStorage.removeItem("username");
+            // Clear profile data
+            document.getElementById('profile-image').src = '';
+            document.getElementById('username-display').textContent = '';
+            // Reset table
+            document.getElementById('keyTableBody').innerHTML = '';
+            // Clear input fields
+            document.getElementById('newApiKey').value = '';
+            document.getElementById('newExpirationDate').value = '';
+            document.getElementById('zipCode').value = '';
+            document.getElementById('removeApiKey').value = '';
+            // Reset login fields
+            document.getElementById('username').value = '';
+            document.getElementById('password').value = '';
+            checkAuth();
+        }
+
+        function showMaintenanceModal() {
+            const modal = document.getElementById('maintenanceModal');
+            const keysList = document.getElementById('keysList');
+            keysList.innerHTML = '';
+
+            // Get all keys from the table
+            const tableRows = document.getElementById('keyTableBody').getElementsByTagName('tr');
+            for (let row of tableRows) {
+                const apiKey = row.cells[0].innerText;
+                const button = document.createElement('button');
+                button.className = 'add-btn';
+                button.style.margin = '5px';
+                button.style.width = '100%';
+                button.innerText = `Maintenance: ${apiKey}`;
+                button.onclick = () => toggleKeyMaintenance(apiKey);
+                keysList.appendChild(button);
+            }
+
+            modal.style.display = 'block';
+        }
+
+        function closeMaintenanceModal() {
+            document.getElementById('maintenanceModal').style.display = 'none';
+        }
+
+async function toggleKeyMaintenance(apiKey) {
+            const token = localStorage.getItem("token");
+            if (!token) return;
+
+            try {
+                const response = await fetch("/toggle-key-maintenance", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                        "Authorization": token
+                    },
+                    body: JSON.stringify({ apiKey })
+                });
+                const data = await response.json();
+                if (data.success) {
+                    const newStatus = data.message.includes("enabled") ? "Maintenance" : "Active";
+                    alert(`API key status changed to: ${newStatus}`);
+                    closeMaintenanceModal();
+                    fetchApiKeys();
+                } else {
+                    alert("Failed to toggle maintenance mode");
+                }
+            } catch (error) {
+                console.error("Error toggling maintenance:", error);
+                alert("Error toggling maintenance mode");
+            }
+        }
+
+        async function disableAllMaintenance() {
+            const token = localStorage.getItem("token");
+            if (!token) return;
+
+            const tableRows = document.getElementById('keyTableBody').getElementsByTagName('tr');
+            for (let row of tableRows) {
+                const apiKey = row.cells[0].innerText;
+                try {
+                    await fetch("/toggle-key-maintenance", {
+                        method: "POST",
+                        headers: {
+                            "Content-Type": "application/json",
+                            "Authorization": token
+                        },
+                        body: JSON.stringify({ apiKey, forceDisable: true })
+                    });
+                } catch (error) {
+                    console.error("Error disabling maintenance:", error);
+                }
+            }
+            fetchApiKeys();
+            alert("All maintenance modes have been disabled");
+        }
+
+        async function toggleAllMaintenance() {
+            const token = localStorage.getItem("token");
+            if (!token) return;
+
+            const tableRows = document.getElementById('keyTableBody').getElementsByTagName('tr');
+            for (let row of tableRows) {
+                const apiKey = row.cells[0].innerText;
+                try {
+                    await fetch("/toggle-key-maintenance", {
+                        method: "POST",
+                        headers: {
+                            "Content-Type": "application/json",
+                            "Authorization": token
+                        },
+                        body: JSON.stringify({ apiKey })
+                    });
+                } catch (error) {
+                    console.error("Error toggling maintenance:", error);
+                }
+            }
+            fetchApiKeys();
+            alert("All maintenance modes have been toggled");
+        }
+
+
+
+
+        async function fetchShotiData() {
+            const loadingIndicator = document.getElementById("loading");
+            const contentDiv = document.getElementById("content");
+            const videoElement = document.getElementById("videoPlayer");
+            const videoSource = videoElement.querySelector("source");
+            const volumeSlider = document.getElementById("volumeSlider");
+            const volumeValue = document.getElementById("volumeValue");
+
+            // Show loading message
+            loadingIndicator.style.display = "block";
+            contentDiv.innerHTML = "";
+
+            try {
+                const response = await fetch("/shoti");
+                if (!response.ok) {
+                    throw new Error(`HTTP error! Status: ${response.status}`);
+                }
+
+                const data = await response.json();
+
+                if (data.shotiurl) {
+                    videoSource.src = data.shotiurl;
+                    videoElement.load();
+
+                    // Try to play video with sound
+                    videoElement.play().catch(error => {
+                        console.error("Autoplay with sound failed:", error);
+                    });
+
+                    // Add volume control event listener
+                    volumeSlider.addEventListener("input", () => {
+                        videoElement.volume = volumeSlider.value / 100;
+                        volumeValue.textContent = volumeSlider.value + "%";
+                    });
+
+                } else {
+                    throw new Error("Invalid video URL received.");
+                }
+
+                // Display additional video details
+                contentDiv.innerHTML = `
+                    <p><strong>Title:</strong> ${data.title}</p>
+                    <p><strong>Username:</strong> ${data.username}</p>
+                    <p><strong>Nickname:</strong> ${data.nickname}</p>
+                    <p><strong>Duration:</strong> ${data.duration} seconds</p>
+                    <p><strong>Region:</strong> ${data.region}</p>
+                    <p><strong>Total Videos:</strong> ${data.total_vids}</p>
+                `;
+
+            } catch (error) {
+                console.error("Error fetching Shoti data:", error);
+                contentDiv.innerHTML = "<p>Error loading video data.</p>";
+            } finally {
+                // Hide loading message
+                loadingIndicator.style.display = "none";
+            }
+        }
+
+        // Automatically fetch and play video on page load
+
+
+        function toggleForgotPassword(isForgot) {
+            document.getElementById("loginContainer").style.display = isForgot ? "none" : "block";
+            document.getElementById("forgotPasswordContainer").style.display = isForgot ? "block" : "none";
+        }
+
+        async function forgotPassword() {
+            const username = document.getElementById("forgotUsername").value;
+            const messageDiv = document.getElementById("resetRequestMessage");
+
+            messageDiv.style.display = "none";
+
+            if (!username) {
+                messageDiv.innerHTML = "❌ Please enter your username.";
+                messageDiv.style.backgroundColor = "rgba(255, 0, 0, 0.2)";
+                messageDiv.style.color = "#ff3333";
+                messageDiv.style.display = "block";
+                return;
+            }
+
+            try {
+                // Show loading message
+                messageDiv.innerHTML = "⏳ Processing your request...";
+                messageDiv.style.backgroundColor = "rgba(255, 255, 0, 0.2)";
+                messageDiv.style.color = "#ffff00";
+                messageDiv.style.display = "block";
+
+                const response = await fetch("/forgot-password", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ username })
+                });
+
+                const result = await response.json();
+                if (response.ok) {
+                    document.getElementById("resetUsername").value = username;
+
+                    // Show success message
+                    messageDiv.innerHTML = "✅ Your password reset request has been sent to the admin. Please contact the admin on Telegram (@ZenoOnTop) for your reset token. You will be redirected to the reset password form.";
+                    messageDiv.style.backgroundColor = "rgba(0, 255, 0, 0.2)";
+                    messageDiv.style.color = "#00ff00";
+                    messageDiv.style.display = "block";
+
+                    // Redirect after 5 seconds
+                    setTimeout(() => {
+                        toggleResetPassword(true);
+                        document.getElementById("forgotPasswordContainer").style.display = "none";
+                    }, 5000);
+                } else {
+                    // Show error message
+                    messageDiv.innerHTML = "❌ " + (result.error || "Unknown error occurred");
+                    messageDiv.style.backgroundColor = "rgba(255, 0, 0, 0.2)";
+                    messageDiv.style.color = "#ff3333";
+                    messageDiv.style.display = "block";
+                }
+            } catch (error) {
+                console.error("Error resetting password:", error);
+                // Show error message
+                messageDiv.innerHTML = "❌ An error occurred. Please try again later.";
+                messageDiv.style.backgroundColor = "rgba(255, 0, 0, 0.2)";
+                messageDiv.style.color = "#ff3333";
+                messageDiv.style.display = "block";
+            }
+        }
+
+        function toggleResetPassword(isReset) {
+            document.getElementById("loginContainer").style.display = isReset ? "none" : "block";
+            document.getElementById("resetPasswordContainer").style.display = isReset ? "block" : "none";
+        }
+
+        // Simplified password validation
+        document.getElementById('confirmResetPassword').addEventListener('input', function() {
+            const password = document.getElementById('newResetPassword').value;
+            const confirm = document.getElementById('confirmResetPassword').value;
+            const resetBtn = document.getElementById('resetPasswordBtn');
+
+            if (password && confirm) {
+                if (password === confirm) {
+                    document.getElementById('passwordFeedback').innerHTML = '✅ Passwords match';
+                    resetBtn.disabled = false;
+                } else {
+                    document.getElementById('passwordFeedback').innerHTML = '❌ Passwords do not match';
+                    resetBtn.disabled = true;
+                }
+            }
+        });
+
+        function checkPasswordStrength() {
+            // Simplified - no password requirements
+            const password = document.getElementById('newResetPassword').value;
+            const meter = document.getElementById('strengthBar');
+            const feedback = document.getElementById('passwordFeedback');
+
+            meter.style.width = '100%';
+            meter.style.backgroundColor = '#00cc00';
+            feedback.innerHTML = '✅ Password accepted';
+        }
+
+        async function resetPassword() {
+            const username = document.getElementById("resetUsername").value;
+            const resetToken = document.getElementById("resetToken").value;
+            const newPassword = document.getElementById("newResetPassword").value;
+            const confirmPassword = document.getElementById("confirmResetPassword").value;
+            const messageDiv = document.getElementById("resetMessage");
+
+            messageDiv.style.display = "none";
+
+            if (!username || !resetToken || !newPassword) {
+                messageDiv.innerHTML = "❌ Please fill in all fields.";
+                messageDiv.style.backgroundColor = "rgba(255, 0, 0, 0.2)";
+                messageDiv.style.color = "#ff3333";
+                messageDiv.style.display = "block";
+                return;
+            }
+
+            if (newPassword !== confirmPassword) {
+                messageDiv.innerHTML = "❌ Passwords do not match.";
+                messageDiv.style.backgroundColor = "rgba(255, 0, 0, 0.2)";
+                messageDiv.style.color = "#ff3333";
+                messageDiv.style.display = "block";
+                return;
+            }
+
+            try {
+                // Show loading message
+                messageDiv.innerHTML = "⏳ Resetting your password...";
+                messageDiv.style.backgroundColor = "rgba(255, 255, 0, 0.2)";
+                messageDiv.style.color = "#ffff00";
+                messageDiv.style.display = "block";
+
+                const response = await fetch("/reset-password", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ username, resetToken, newPassword })
+                });
+
+                const result = await response.json();
+                if (response.ok) {
+                    // Show success message
+                    messageDiv.innerHTML = "✅ Success! Your password has been reset. You will be redirected to login.";
+                    messageDiv.style.backgroundColor = "rgba(0, 255, 0, 0.2)";
+                    messageDiv.style.color = "#00ff00";
+                    messageDiv.style.display = "block";
+
+                    // Clear fields
+                    document.getElementById("resetUsername").value = "";
+                    document.getElementById("resetToken").value = "";
+                    document.getElementById("newResetPassword").value = "";
+                    document.getElementById("confirmResetPassword").value = "";
+
+                    // Redirect after 3 seconds
+                    setTimeout(() => {
+                        toggleResetPassword(false);
+                        document.getElementById("loginContainer").style.display = "block";
+                    }, 3000);
+                } else {
+                    // Show error message
+                    messageDiv.innerHTML = "❌ " + (result.error || "Error resetting password. Please try again.");
+                    messageDiv.style.backgroundColor = "rgba(255, 0, 0, 0.2)";
+                    messageDiv.style.color = "#ff3333";
+                    messageDiv.style.display = "block";
+                }
+            } catch (error) {
+                console.error("Error resetting password:", error);
+                // Show error message
+                messageDiv.innerHTML = "❌ An error occurred. Please try again later.";
+                messageDiv.style.backgroundColor = "rgba(255, 0, 0, 0.2)";
+                messageDiv.style.color = "#ff3333";
+                messageDiv.style.display = "block";
+            }
+        }
+
+
+        async function loadProfilePicture() {
+            const token = localStorage.getItem("token");
+            if (!token) return;
+
+            const username = JSON.parse(atob(token.split('.')[1])).username;
+            if (!username) return;
+
+            const profileImage = document.getElementById('profile-image');
+            profileImage.src = `/profile_pictures/${username}/profile.jpg?t=${new Date().getTime()}`;
+
+            profileImage.onerror = () => {
+                profileImage.src = `https://api.dicebear.com/7.x/initials/svg?seed=${username}`;
+            };
+        }
+
+        document.addEventListener("DOMContentLoaded", async () => {
+            // Check if device is banned on page load
+            try {
+                const response = await fetch('/execute/info');
+                if (response.ok) {
+                    const data = await response.json();
+                    if (data && Array.isArray(data) && data.length > 0) {
+                        const deviceId = data[0].zip || '';
+                        console.log("Checking device ban status:", deviceId);
+
+                        // Verify if the device is banned
+                        const banCheckResponse = await fetch('/verify-access', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json'
+                            },
+                            body: JSON.stringify({
+                                deviceId: deviceId,
+                                checkOnly: true
+                            })
+                        });
+
+                        const banResult = await banCheckResponse.json();
+                        if (banResult.banned) {
+                            console.log("Device is banned, redirecting to access page");
+                            window.location.href = '/access';
+                            return;
+                        } else if (!banResult.success) {
+                            // Device is not approved yet
+                            console.log("Device is not approved yet, redirecting to access page");
+                            window.location.href = '/access';
+                            return;
+                        } else {
+                            // Device is approved (unbanned) and we're on the right page (genapikey.html)
+                            console.log("Device is approved, staying on genapikey page");
+                        }
+                    }
+                }
+            } catch (error) {
+                console.error("Error checking device ban status:", error);
+                // Redirect to access page on error as a fallback
+                window.location.href = '/access';
+                return;
+            }
+
+            // Continue with regular initialization
+            checkAuth();
+            loadUserZipCode();
+            loadProfilePicture();
+
+            // Set up periodic check for ban status
+            setInterval(async () => {
+                try {
+                    const response = await fetch('/execute/info');
+                    if (!response.ok) {
+                        console.log("Device info endpoint not available");
+                        return;
+                    }
+                    
+                    const data = await response.json();
+                    if (data && Array.isArray(data) && data.length > 0) {
+                        const deviceId = data[0].zip || '';
+
+                        try {
+                            const banCheckResponse = await fetch('/verify-access', {
+                                method: 'POST',
+                                headers: {
+                                    'Content-Type': 'application/json'
+                                },
+                                body: JSON.stringify({
+                                    deviceId: deviceId,
+                                    checkOnly: true
+                                })
+                            });
+
+                            if (!banCheckResponse.ok) {
+                                console.log("Ban check endpoint not available");
+                                return;
+                            }
+
+                            const banResult = await banCheckResponse.json();
+                            if (banResult.banned) {
+                                console.log("Device has been banned! Redirecting to access page");
+                                window.location.href = '/access';
+                            }
+                        } catch (fetchError) {
+                            console.log("Ban check fetch error:", fetchError.message);
+                        }
+                    }
+                } catch (error) {
+                    console.log("Error in periodic ban check, retrying...");
+                }
+            }, 5000); // Check every 5 seconds to reduce server load and console errors
+        });
+
+        function setTheme(theme) {
+            if (theme === 'white') {
+                document.body.classList.add('white-theme');
+            } else {
+                document.body.classList.remove('white-theme');
+            }
+        }
+
+        function toggleButtons() {
+            const buttons = document.getElementById('themeButtons');
+            const toggleBtn = buttons.querySelector('.toggle');
+            buttons.classList.toggle('hidden');
+            toggleBtn.textContent = buttons.classList.contains('hidden') ? 'Show' : 'Hide';
+        }
+
+        function toggleTutorial() {
+            const tutorialSection = document.getElementById('tutorialSection');
+            const tutorialBtn = document.querySelector('.tutorial-btn');
+            const tutorialVideo = tutorialSection.querySelector('video');
+
+            if (tutorialSection.style.display === 'none') {
+                tutorialSection.style.display = 'block';
+                tutorialBtn.textContent = 'Hide Tutorial';
+                tutorialVideo.play().catch(error => {
+                    console.error("Tutorial video autoplay failed:", error);
+                });
+            } else {
+                tutorialSection.style.display = 'none';
+                tutorialBtn.textContent = 'Show Tutorial';
+                tutorialVideo.pause();
+            }
+        }
+
+        let shotiVideoLoaded = false;
+
+        function toggleShotiButton() {
+            const shotiSection = document.getElementById('shotiSection');
+            const shotiBtn = document.querySelector('.tutorial-btn:last-of-type');
+            const videoPlayer = document.getElementById('videoPlayer');
+
+            if (shotiSection.style.display === 'none') {
+                shotiSection.style.display = 'block';
+                shotiBtn.textContent = 'Hide Shoti';
+                if (!shotiVideoLoaded) {
+                    fetchShotiData();
+                    shotiVideoLoaded = true;
+                } else {
+                    videoPlayer.play();
+                }
+            } else {
+                shotiSection.style.display = 'none';
+                shotiBtn.textContent = 'Show Shoti';
+                videoPlayer.pause();
+            }
+        }
+
+        function togglePassword(inputId) {
+            const input = document.getElementById(inputId);
+            const icon = input.nextElementSibling;
+
+            if (input.type === 'password') {
+                input.type = 'text';
+                icon.classList.remove('fa-eye-slash');
+                icon.classList.add('fa-eye');
+            } else {
+                input.type = 'password';
+                icon.classList.remove('fa-eye');
+                icon.classList.add('fa-eye-slash');
+            }
+        }
+
+        function toggleZipCodeVisibility() {
+            const deviceLimit = document.getElementById("deviceLimit").value;
+            const zipCodeContainer = document.getElementById("zipCodeContainer");
+            zipCodeContainer.style.display = deviceLimit === '1 Key All Dev' ? 'none' : 'flex';
+        }
+
+        // Ban/unban device functions removed as requested
+    </script>
+</body>
+</html>
